@@ -3,20 +3,18 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { useGLTF, Environment, ContactShadows, Float, Html } from '@react-three/drei'
 import * as THREE from 'three'
 
-// Open source realistic 3D model CDN
-const MODEL_URL = 'https://vazxmixjsiawhamofees.supabase.co/storage/v1/object/public/models/porsche-911-carrera-4s/model.gltf'
+// Open source realistic 3D model 
+const MODEL_URL = '/ferrari.glb'
 
 function RealCarModel({ scrollYProgress }) {
   const { scene, materials } = useGLTF(MODEL_URL)
   const carRef = useRef()
 
-  // Clone materials so we can interpolate their opacity dynamically
   const clonedMaterials = useMemo(() => {
     const fresh = {}
     Object.entries(materials).forEach(([key, mat]) => {
       fresh[key] = mat.clone()
-      fresh[key].transparent = true
-      fresh[key].depthWrite = false // prevents glass sorting issues
+      // We do NOT set transparent = true immediately so it renders exactly as the original solid model.
     })
     return fresh
   }, [materials])
@@ -42,11 +40,20 @@ function RealCarModel({ scrollYProgress }) {
     }
 
     Object.values(clonedMaterials).forEach(mat => {
+      let matTargetOpacity = targetOpacity;
       // Preserve some opacity on the underbody/glass so the car doesn't completely vanish
-      if (mat.name.includes('paint') || mat.name.includes('metal')) {
-         mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 0.08)
-      } else {
-         mat.opacity = THREE.MathUtils.lerp(mat.opacity, Math.max(0.1, targetOpacity), 0.08)
+      if (!mat.name.includes('paint') && !mat.name.includes('metal')) {
+         matTargetOpacity = Math.max(0.1, targetOpacity);
+      }
+      
+      mat.opacity = THREE.MathUtils.lerp(mat.opacity, matTargetOpacity, 0.08)
+
+      // Toggle depth sorting based on opacity threshold
+      const shouldBeTransparent = mat.opacity < 0.99;
+      if (mat.transparent !== shouldBeTransparent) {
+        mat.transparent = shouldBeTransparent;
+        mat.depthWrite = !shouldBeTransparent;
+        mat.needsUpdate = true;
       }
     })
 

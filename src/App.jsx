@@ -134,11 +134,9 @@ export default function App() {
           </FadeSection>
         </section>
 
-        {/* Did You Know / Proof transition */}
-        <section className="scene proof-scene">
+        {/* Proof Stats */}
+        <section className="scene stats-scene">
           <FadeSection className="proof-grid glassmorphism">
-            <h2 className="did-you-know-title">Did you know?</h2>
-            <p className="did-you-know-text">Engine repairs cost upwards of <strong style={{color: '#ff9f0a'}}>$10,000</strong> in Australia. Get years of protection for a fraction of the cost with an extended warranty.</p>
             <div className="proof-stats-row">
               <div className="proof-stat">
                 <span className="huge-number">99%+</span>
@@ -150,6 +148,19 @@ export default function App() {
               </div>
             </div>
             <a href="#" className="link-more">More about CARS24 warranty &rarr;</a>
+          </FadeSection>
+        </section>
+
+        {/* Did You Know */}
+        <section className="scene did-you-know-scene">
+          <FadeSection className="did-you-know-card glassmorphism">
+            <div className="did-you-know-content">
+              <h2 className="did-you-know-title">Did you know?</h2>
+              <p className="did-you-know-text">Engine repairs cost upwards of <strong style={{color: '#ff9f0a'}}>$10,000</strong> in Australia. Get years of protection for a fraction of the cost with an extended warranty.</p>
+            </div>
+            <div className="did-you-know-image">
+               <img src="/range-rover.png" alt="Protected Car" />
+            </div>
           </FadeSection>
         </section>
 
