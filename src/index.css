@@ -1,212 +1,62 @@
-/* ==========================================
-   CARS24 LEGO DESIGN SYSTEM TOKENS
-   Brand: Cars24 | Font: DM Sans (Geist proxy)
-   ========================================== */
+/* =========================================================
+   CARS24 WARRANTY — CINEMATIC EXPERIENCE
+   Apple-style scroll animations · 3D car showcase · Antigravity
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');
+
 :root {
-  /* Brand Colors */
-  --brand-blue: #4736FE;
-  --brand-blue-light: #5b4dff;
-  --brand-blue-dark: #3829d4;
-  --brand-navy: #002238;
-  --brand-navy-light: #0a3352;
-
-  /* Semantic Colors */
-  --lego-color-surface-default: #ffffff;
-  --lego-color-surface-subtle: #f5f8ff;
-  --lego-color-surface-brand-primary: #4736FE;
-  --lego-color-text-primary: #002238;
-  --lego-color-text-secondary: #5b5b5b;
-  --lego-color-text-brand: #0066cc;
-  --lego-color-border-default: #e2e8f0;
-  --lego-color-border-brand: #4736FE;
-
-  /* Tints */
-  --tint-blue-10: rgba(71, 54, 254, 0.08);
-  --tint-blue-20: rgba(71, 54, 254, 0.15);
-  --tint-london-rain: #e0ecf9;
-  --tint-london-rain-40: rgba(224, 236, 249, 0.4);
-  --tint-london-rain-70: rgba(224, 236, 249, 0.7);
-
-  /* Status */
-  --color-success: #2ea12f;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-
-  /* Spacing */
-  --lego-spacing-4: 4px;
-  --lego-spacing-8: 8px;
-  --lego-spacing-12: 12px;
-  --lego-spacing-16: 16px;
-  --lego-spacing-20: 20px;
-  --lego-spacing-24: 24px;
-  --lego-spacing-32: 32px;
-  --lego-spacing-48: 48px;
-
-  /* Radius */
-  --radius-xs: 8px;
-  --radius-s: 10px;
-  --radius-m: 12px;
-  --radius-l: 16px;
-  --radius-xl: 20px;
-  --radius-full: 999px;
-
-  /* Border */
-  --border-thin: 1px;
-  --border-regular: 1px;
-  --border-medium: 2px;
-
-  /* Typography */
-  --brand-font: 'DM Sans', sans-serif;
-  --weight-light: 300;
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
-  --weight-extrabold: 800;
-
-  /* Shadows */
-  --shadow-xs: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.10);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
-  --shadow-brand: 0 8px 32px rgba(71, 54, 254, 0.25);
-
-  /* Transitions */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-spring: 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  --transition-antigravity: 800ms cubic-bezier(0.23, 1.12, 0.32, 1.2);
+  --brand: #4736FE;
+  --brand-light: #7c5cfc;
+  --brand-dark: #3829d4;
+  --navy: #002238;
+  --surface: #ffffff;
+  --surface-dim: #f5f8ff;
+  --text-1: #0f172a;
+  --text-2: #64748b;
+  --text-3: #94a3b8;
+  --border: #e2e8f0;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --font: 'DM Sans', -apple-system, sans-serif;
+  --radius: 14px;
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --smooth: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ==========================================
-   RESET & BASE
-   ========================================== */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: var(--brand-font);
-  font-weight: var(--weight-regular);
-  color: var(--lego-color-text-primary);
-  background: #f0f4f8;
-  min-height: 100vh;
-  cursor: none;
+  font-family: var(--font);
+  color: var(--text-1);
+  background: #080810;
   overflow-x: hidden;
 }
 
-/* ==========================================
-   CUSTOM CURSOR
-   ========================================== */
-.cursor-dot {
+/* =========================================================
+   SCROLL PROGRESS
+   ========================================================= */
+.scroll-progress-track {
   position: fixed;
-  top: 0; left: 0;
-  width: 8px; height: 8px;
-  background: var(--brand-blue);
-  border-radius: 50%;
-  pointer-events: none;
+  top: 0; left: 0; right: 0;
+  height: 3px;
   z-index: 9999;
-  transform: translate(-50%, -50%);
-  transition: width 200ms, height 200ms, background 200ms;
-  mix-blend-mode: multiply;
+  background: rgba(255,255,255,0.05);
 }
 
-.cursor-ring {
-  position: fixed;
-  top: 0; left: 0;
-  width: 40px; height: 40px;
-  border: 2px solid rgba(71, 54, 254, 0.4);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9998;
-  transform: translate(-50%, -50%);
-  transition: transform 80ms linear, width 300ms ease, height 300ms ease, border-color 300ms;
-}
-
-.cursor-ring.hovered {
-  width: 64px; height: 64px;
-  border-color: var(--brand-blue);
-}
-
-/* ==========================================
-   KEYFRAME ANIMATIONS
-   ========================================== */
-@keyframes floatUp {
-  0% { opacity: 0; transform: translateY(40px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes floatUpFast {
-  0% { opacity: 0; transform: translateY(24px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes scaleIn {
-  0% { opacity: 0; transform: scale(0.85); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes slideInLeft {
-  0% { opacity: 0; transform: translateX(-32px); }
-  100% { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideInRight {
-  0% { opacity: 0; transform: translateX(32px); }
-  100% { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes antigravityFloat {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-8px) rotate(0.5deg); }
-  66% { transform: translateY(-4px) rotate(-0.3deg); }
-}
-
-@keyframes antigravityFloatSlow {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
-}
-
-@keyframes stampBounce {
-  0% { transform: scale(0) rotate(-30deg); opacity: 0; }
-  60% { transform: scale(1.15) rotate(5deg); opacity: 1; }
-  80% { transform: scale(0.95) rotate(-2deg); }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(71, 54, 254, 0.3); }
-  50% { box-shadow: 0 0 0 12px rgba(71, 54, 254, 0); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-@keyframes countUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes ripple {
-  0% { transform: scale(0); opacity: 0.6; }
-  100% { transform: scale(4); opacity: 0; }
-}
-
-@keyframes progressFill {
-  from { width: 0; }
-  to { width: var(--target-width, 33%); }
+.scroll-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand), #a78bfa, var(--brand));
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+  width: 0;
+  transition: width 80ms linear;
 }
 
 @keyframes gradientShift {
@@ -214,985 +64,737 @@ body {
   50% { background-position: 100% 50%; }
 }
 
-@keyframes particleFade {
-  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-  100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-}
-
-@keyframes carScan {
-  0% { opacity: 0; transform: translateY(4px); }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-4px); }
-}
-
-@keyframes checkmarkDraw {
-  0% { stroke-dashoffset: 100; }
-  100% { stroke-dashoffset: 0; }
-}
-
-@keyframes planCardSlide {
-  0% { opacity: 0; transform: translateX(30px) scale(0.97); }
-  100% { opacity: 1; transform: translateX(0) scale(1); }
-}
-
-/* ==========================================
-   SCROLL REVEAL SYSTEM
-   ========================================== */
-.reveal {
-  opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 700ms ease, transform 700ms var(--transition-spring);
-}
-
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.reveal-scale {
-  opacity: 0;
-  transform: scale(0.92);
-  transition: opacity 600ms ease, transform 600ms var(--transition-spring);
-}
-
-.reveal-scale.visible {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.reveal-left {
-  opacity: 0;
-  transform: translateX(-32px);
-  transition: opacity 600ms ease, transform 600ms var(--transition-spring);
-}
-
-.reveal-left.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.reveal-right {
-  opacity: 0;
-  transform: translateX(32px);
-  transition: opacity 600ms ease, transform 600ms var(--transition-spring);
-}
-
-.reveal-right.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* ==========================================
-   MAGNETIC BUTTON SYSTEM
-   ========================================== */
-.magnetic-wrap {
-  display: inline-block;
-  position: relative;
-}
-
-/* ==========================================
-   RIPPLE EFFECT
-   ========================================== */
-.ripple-container {
-  position: relative;
-  overflow: hidden;
-}
-
-.ripple-container .ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
-  animation: ripple 600ms ease-out forwards;
-  pointer-events: none;
-  width: 40px;
-  height: 40px;
-  margin-left: -20px;
-  margin-top: -20px;
-}
-
-/* ==========================================
-   APP LAYOUT
-   ========================================== */
+/* =========================================================
+   APP SHELL
+   ========================================================= */
 #root {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
   min-height: 100vh;
-  padding: 0;
 }
 
 .app-shell {
   width: 100%;
   max-width: 430px;
-  background: var(--lego-color-surface-default);
-  min-height: 100vh;
   position: relative;
-  box-shadow: 0 0 60px rgba(0,0,0,0.12);
   overflow: hidden;
 }
 
-/* ==========================================
+/* =========================================================
    HEADER
-   ========================================== */
+   ========================================================= */
 .header {
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: white;
-  border-bottom: var(--border-thin) solid var(--lego-color-border-default);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  z-index: 200;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 
 .header-bar {
   display: flex;
   align-items: center;
-  gap: var(--lego-spacing-12);
-  padding: var(--lego-spacing-12) var(--lego-spacing-16);
-  height: 56px;
+  gap: 12px;
+  padding: 12px 16px;
+  height: 54px;
 }
 
 .back-btn {
-  width: 36px; height: 36px;
-  border-radius: var(--radius-full);
+  width: 34px; height: 34px;
+  border-radius: 50%;
   border: none;
-  background: var(--tint-blue-10);
+  background: rgba(71,54,254,0.08);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  transition: background var(--transition-fast), transform var(--transition-spring);
+  transition: all 0.3s var(--spring);
   flex-shrink: 0;
 }
 
-.back-btn:hover {
-  background: var(--tint-blue-20);
-  transform: scale(1.08);
-}
+.back-btn:hover { background: rgba(71,54,254,0.15); transform: scale(1.08); }
 
 .header-car-name {
-  font-size: 15px;
-  font-weight: var(--weight-semibold);
-  color: var(--lego-color-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-1);
   letter-spacing: -0.2px;
 }
 
-.header-car-year {
-  font-size: 12px;
-  font-weight: var(--weight-regular);
-  color: var(--lego-color-text-secondary);
+.header-car-sub {
+  font-size: 11px;
+  color: var(--text-2);
 }
 
-/* ==========================================
-   PROGRESS STEPPER
-   ========================================== */
 .stepper {
-  padding: var(--lego-spacing-12) var(--lego-spacing-16) 0;
-  background: white;
-}
-
-.stepper-pills {
   display: flex;
-  gap: var(--lego-spacing-8);
+  gap: 6px;
+  padding: 6px 16px 10px;
 }
 
 .stepper-pill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   padding: 4px 12px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: var(--weight-medium);
-  transition: all var(--transition-base);
-  flex-shrink: 0;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: #f0f4f8;
+  color: var(--text-2);
+  transition: all 0.3s ease;
 }
 
 .stepper-pill.active {
-  background: var(--brand-blue);
+  background: var(--brand);
   color: white;
 }
 
-.stepper-pill.done {
-  background: rgba(46, 161, 47, 0.12);
-  color: var(--color-success);
-}
-
-.stepper-pill.inactive {
-  background: var(--tint-london-rain);
-  color: var(--lego-color-text-secondary);
-}
-
-.stepper-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.5;
-}
-
-/* ==========================================
-   DAP BAR (Drive Away Price)
-   ========================================== */
-.dap-bar {
-  margin: var(--lego-spacing-12) var(--lego-spacing-16);
-  background: linear-gradient(135deg, #f0f5ff 0%, #e8eeff 100%);
-  border-radius: var(--radius-m);
-  padding: var(--lego-spacing-8) var(--lego-spacing-16);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid rgba(71, 54, 254, 0.12);
-}
-
-.dap-label {
-  font-size: 13px;
-  font-weight: var(--weight-medium);
-  color: var(--lego-color-text-secondary);
-}
-
-.dap-price {
-  font-size: 16px;
-  font-weight: var(--weight-bold);
-  color: var(--lego-color-text-primary);
-  letter-spacing: -0.5px;
-}
-
-/* ==========================================
-   HERO SECTION
-   ========================================== */
-.hero {
-  padding: var(--lego-spacing-20) var(--lego-spacing-16);
-  background: white;
+/* =========================================================
+   CINEMATIC HERO
+   ========================================================= */
+.hero-cinema {
   position: relative;
-  overflow: hidden;
-}
-
-.hero::before {
-  content: '';
-  position: absolute;
-  top: -60px; right: -60px;
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, rgba(71,54,254,0.06) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.hero-inner {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--lego-spacing-12);
-}
-
-.hero-text {
-  flex: 1;
-}
-
-.hero-eyebrow {
-  font-size: 11px;
-  font-weight: var(--weight-regular);
-  color: var(--lego-color-text-secondary);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-
-.hero-title {
-  font-size: 22px;
-  font-weight: var(--weight-bold);
-  color: var(--lego-color-text-primary);
-  line-height: 1.2;
-  letter-spacing: -0.5px;
-  margin-bottom: 6px;
-}
-
-.hero-title .brand-blue {
-  color: var(--brand-blue);
-}
-
-.hero-subtitle {
-  font-size: 12px;
-  font-weight: var(--weight-regular);
-  color: var(--lego-color-text-secondary);
-  line-height: 1.5;
-  max-width: 200px;
-}
-
-/* Stamp Badge */
-.stamp-badge {
-  flex-shrink: 0;
-  width: 88px; height: 88px;
-  position: relative;
-  animation: stampBounce 900ms var(--transition-spring) 400ms both;
-  cursor: pointer;
-}
-
-.stamp-badge:hover .stamp-inner {
-  animation: antigravityFloat 2s ease-in-out infinite;
-}
-
-.stamp-inner {
-  width: 88px; height: 88px;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, #2ea12f, #4fbf50, #2ea12f, #27831f, #2ea12f);
+  min-height: 110vh;
+  background: #080810;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(46, 161, 47, 0.35);
-  border: 3px dashed rgba(255,255,255,0.5);
-  position: relative;
+  padding: 60px 24px 40px;
   overflow: hidden;
 }
 
-.stamp-inner::before {
-  content: '';
+.hero-bg {
   position: absolute;
-  inset: 4px;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(71,54,254,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(71,54,254,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black, transparent);
+}
+
+.hero-glow {
+  position: absolute;
+  width: 400px; height: 400px;
+  top: 20%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(71,54,254,0.2) 0%, transparent 60%);
+  filter: blur(60px);
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.hero-glow-2 {
+  position: absolute;
+  width: 300px; height: 300px;
+  top: 60%; left: 30%;
+  background: radial-gradient(circle, rgba(124,92,252,0.12) 0%, transparent 60%);
+  filter: blur(50px);
+  animation: glowPulse 5s ease-in-out infinite 1s;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  width: 100%;
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  animation: fadeUp 1s ease 0.2s both;
+}
+
+.hero-eyebrow-line {
+  width: 30px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(71,54,254,0.5), transparent);
+}
+
+.hero-title {
+  font-size: 36px;
+  font-weight: 800;
+  color: white;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  margin-bottom: 12px;
+  animation: fadeUp 1s ease 0.4s both;
+}
+
+.hero-title-brand {
+  background: linear-gradient(135deg, #818cf8, var(--brand), #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+  max-width: 280px;
+  margin: 0 auto 32px;
+  animation: fadeUp 1s ease 0.6s both;
+}
+
+.hero-subtitle strong {
+  color: rgba(255,255,255,0.8);
+}
+
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Car stage ── */
+.hero-car-stage {
+  position: relative;
+  width: 320px;
+  height: 200px;
+  margin: 0 auto 20px;
+  will-change: transform;
+}
+
+.hero-car-reflection {
+  position: absolute;
+  bottom: -10px; left: 10%; right: 10%;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(71,54,254,0.08), transparent);
+  filter: blur(8px);
+  transform: scaleY(-1);
+  opacity: 0.3;
+}
+
+.hero-car-shadow {
+  position: absolute;
+  bottom: -20px; left: 20%; right: 20%;
+  height: 16px;
+  background: radial-gradient(ellipse, rgba(71,54,254,0.3), transparent);
+  filter: blur(10px);
+}
+
+/* ── Floating parts orbit ── */
+.floating-parts {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 320px;
+  height: 180px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.orbit-part {
+  position: absolute;
+  top: 50%; left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  will-change: transform;
+  transition: transform 0.3s linear;
+}
+
+.orbit-emoji {
+  font-size: 20px;
+  filter: drop-shadow(0 0 8px rgba(71,54,254,0.5));
+}
+
+.orbit-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+/* ── Stamp badge ── */
+.stamp-badge {
+  position: absolute;
+  top: 0; right: 0;
+  animation: stampEntry 0.8s var(--spring) 1s both;
+}
+
+.stamp-inner {
+  width: 72px; height: 72px;
   border-radius: 50%;
-  border: 1.5px dashed rgba(255,255,255,0.4);
+  background: conic-gradient(from 0deg, #22c55e, #4ade80, #22c55e, #16a34a, #22c55e);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 24px rgba(34,197,94,0.4);
+  border: 2px dashed rgba(255,255,255,0.4);
+  position: relative;
+  animation: floatY 3s ease-in-out infinite;
 }
 
 .stamp-upto {
-  font-size: 8px;
-  font-weight: var(--weight-semibold);
-  color: rgba(255,255,255,0.9);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 7px; font-weight: 700;
+  color: rgba(255,255,255,0.8);
+  letter-spacing: 2px;
   transform: rotate(-15deg);
 }
 
 .stamp-months {
-  font-size: 20px;
-  font-weight: var(--weight-extrabold);
-  color: white;
-  line-height: 1;
+  font-size: 22px; font-weight: 800;
+  color: white; line-height: 1;
   transform: rotate(-15deg);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.stamp-label {
+  font-size: 8px; font-weight: 700;
+  color: white; transform: rotate(-15deg);
 }
 
 .stamp-protection {
-  font-size: 7px;
-  font-weight: var(--weight-bold);
-  color: rgba(255,255,255,0.9);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 6px; font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 1.5px;
   transform: rotate(-15deg);
 }
 
-/* ==========================================
-   COVERAGE CARD
-   ========================================== */
-.coverage-card {
-  margin: 0 var(--lego-spacing-16) var(--lego-spacing-16);
-  border-radius: var(--radius-m);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-spring), box-shadow var(--transition-base);
-  background: white;
-  border: 1px solid rgba(71, 54, 254, 0.08);
+@keyframes stampEntry {
+  0% { transform: scale(0) rotate(-40deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); }
 }
 
-.coverage-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
-.coverage-header {
-  background: var(--tint-london-rain);
-  padding: var(--lego-spacing-12) var(--lego-spacing-16);
-  text-align: center;
-}
-
-.coverage-header-title {
-  font-size: 14px;
-  font-weight: var(--weight-semibold);
-  color: var(--lego-color-text-secondary);
-}
-
-.coverage-header-sub {
-  font-size: 12px;
-  color: var(--lego-color-text-secondary);
-  margin-top: 2px;
-}
-
-.coverage-header-sub .highlight {
-  font-weight: var(--weight-bold);
-  color: var(--lego-color-text-brand);
-}
-
-.coverage-diagram {
-  background: var(--tint-london-rain-40);
-  padding: var(--lego-spacing-16);
-  display: flex;
-  justify-content: center;
-  position: relative;
-}
-
-/* Car diagram */
-.car-diagram {
-  position: relative;
-  width: 100%;
-  height: 180px;
-}
-
-.car-body {
+/* ── Scroll hint ── */
+.hero-scroll-hint {
   position: absolute;
+  bottom: 30px;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 160px;
-  height: 80px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.3);
+  font-size: 10px;
+  letter-spacing: 1px;
+  animation: fadeUp 1s ease 1.5s both;
 }
 
-.car-svg {
+.scroll-mouse {
+  width: 20px; height: 32px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  position: relative;
+}
+
+.scroll-dot {
+  position: absolute;
+  top: 6px; left: 50%;
+  width: 3px; height: 6px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  animation: scrollDot 1.5s ease-in-out infinite;
+}
+
+@keyframes scrollDot {
+  0%, 100% { top: 6px; opacity: 1; }
+  50% { top: 16px; opacity: 0.2; }
+}
+
+/* =========================================================
+   3D CAR SVG
+   ========================================================= */
+.car-3d-wrapper {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 4px 16px rgba(71,54,254,0.15));
-  animation: antigravityFloat 4s ease-in-out infinite;
-}
-
-.car-label {
-  position: absolute;
-  font-size: 8px;
-  font-weight: var(--weight-medium);
-  color: #002238;
-  white-space: nowrap;
-  transition: color var(--transition-fast), font-weight var(--transition-fast);
-}
-
-.car-label::after {
-  content: '';
-  position: absolute;
-  width: 3px; height: 3px;
-  background: var(--brand-blue);
-  border-radius: 50%;
-  right: -8px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.car-label.left::after {
-  right: auto;
-  left: -8px;
-}
-
-.car-dot {
-  position: absolute;
-  width: 5px; height: 5px;
-  background: var(--brand-blue);
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(71,54,254,0.2);
-  animation: pulseGlow 2s ease-in-out infinite;
-}
-
-.coverage-footer {
-  background: white;
-  padding: var(--lego-spacing-12) var(--lego-spacing-16);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.coverage-footer:hover {
-  background: var(--tint-blue-10);
-}
-
-.coverage-footer-text {
-  font-size: 12px;
-  font-weight: var(--weight-semibold);
-  color: var(--lego-color-text-brand);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.coverage-footer-arrow {
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  background: var(--brand-blue);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform var(--transition-spring);
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
-.coverage-footer:hover .coverage-footer-arrow {
-  transform: rotate(-90deg) scale(1.1);
+.car-3d-svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  filter: drop-shadow(0 8px 30px rgba(71,54,254,0.25));
 }
 
-/* ==========================================
-   SOCIAL PROOF SECTION
-   ========================================== */
-.social-proof {
-  padding: var(--lego-spacing-20) var(--lego-spacing-16);
-  background: white;
+.part-active {
+  animation: partPulse 1.5s ease-in-out infinite;
 }
 
-.section-title {
+@keyframes partPulse {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.5; }
+}
+
+/* =========================================================
+   3D SHOWCASE SECTION (scroll-pinned)
+   ========================================================= */
+.showcase-section {
+  position: relative;
+  height: 500vh;
+  background: #060610;
+}
+
+.showcase-sticky {
+  position: sticky;
+  top: 54px;
+  height: calc(100vh - 54px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 24px;
+  overflow: hidden;
+}
+
+.showcase-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(71,54,254,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(71,54,254,0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, black, transparent);
+}
+
+.showcase-header {
+  text-align: center;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.showcase-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: var(--brand-light);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.showcase-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: white;
+  line-height: 1.15;
+  letter-spacing: -0.8px;
+}
+
+/* ── Car container ── */
+.showcase-car-container {
+  position: relative;
+  width: 300px;
+  height: 180px;
+  margin: 0 auto 20px;
+  z-index: 2;
+}
+
+.showcase-car-shadow {
+  position: absolute;
+  bottom: -15px; left: 15%; right: 15%;
+  height: 20px;
+  background: radial-gradient(ellipse, rgba(71,54,254,0.3), transparent);
+  filter: blur(12px);
+}
+
+/* ── Scan line ── */
+.scan-line {
+  position: absolute;
+  left: 5%; right: 5%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--brand), var(--brand-light), var(--brand), transparent);
+  box-shadow: 0 0 20px rgba(71,54,254,0.6), 0 0 60px rgba(71,54,254,0.2);
+  z-index: 3;
+  opacity: 0.7;
+  transition: top 0.3s linear;
+}
+
+/* ── Part info panel ── */
+.showcase-part-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 16px 20px;
+  width: 100%;
+  max-width: 360px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: partInfoIn 0.5s ease both;
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes partInfoIn {
+  0% { opacity: 0; transform: translateY(16px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.part-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 12px rgba(71,54,254,0.4));
+}
+
+.part-details { flex: 1; min-width: 0; }
+
+.part-number {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--brand-light);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.part-title {
   font-size: 18px;
-  font-weight: var(--weight-bold);
-  color: var(--lego-color-text-primary);
+  font-weight: 700;
+  color: white;
   letter-spacing: -0.3px;
-  line-height: 1.3;
   margin-bottom: 4px;
 }
 
-.section-subtitle {
-  font-size: 13px;
-  font-weight: var(--weight-regular);
-  color: var(--lego-color-text-secondary);
-  margin-bottom: var(--lego-spacing-16);
+.part-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.5;
+  margin-bottom: 8px;
 }
 
-.feature-cards {
+.part-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.part-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--danger);
+  letter-spacing: -0.5px;
+}
+
+.part-stat-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ── Progress dots ── */
+.showcase-dots {
+  display: flex;
+  gap: 6px;
+  margin-top: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.showcase-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: all 0.4s var(--spring);
+}
+
+.showcase-dot.active {
+  width: 24px;
+  border-radius: 4px;
+  background: var(--brand);
+  box-shadow: 0 0 12px rgba(71,54,254,0.5);
+}
+
+.showcase-dot.done {
+  background: var(--brand-light);
+  opacity: 0.6;
+}
+
+/* =========================================================
+   SOCIAL PROOF
+   ========================================================= */
+.proof-section {
+  background: white;
+  padding: 48px 20px;
+}
+
+.proof-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--brand);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.proof-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-1);
+  line-height: 1.15;
+  letter-spacing: -0.8px;
+  margin-bottom: 24px;
+}
+
+.proof-cards {
   display: flex;
   flex-direction: column;
-  gap: var(--lego-spacing-8);
+  gap: 12px;
 }
 
-.feature-card {
-  border-radius: var(--radius-m);
-  padding: var(--lego-spacing-16);
-  background: linear-gradient(120deg, var(--tint-london-rain) 0%, rgba(255,255,255,0.9) 100%);
+.proof-card {
+  border-radius: var(--radius);
+  padding: 20px;
+  background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+  border: 1px solid rgba(71,54,254,0.06);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--lego-spacing-12);
-  border: 1px solid rgba(71,54,254,0.08);
+  gap: 16px;
   cursor: pointer;
-  transition: transform var(--transition-spring), box-shadow var(--transition-base), background var(--transition-base);
-  overflow: hidden;
+  transition: all 0.4s var(--spring);
   position: relative;
+  overflow: hidden;
 }
 
-.feature-card::before {
+.proof-card::before {
   content: '';
   position: absolute;
   left: 0; top: 0; bottom: 0;
   width: 3px;
-  background: var(--brand-blue);
+  background: var(--brand);
   transform: scaleY(0);
-  transition: transform var(--transition-spring);
+  transition: transform 0.4s var(--spring);
   transform-origin: bottom;
 }
 
-.feature-card:hover::before {
-  transform: scaleY(1);
-}
-
-.feature-card:hover {
+.proof-card:hover {
   transform: translateX(4px) translateY(-2px);
-  box-shadow: var(--shadow-md);
-  background: linear-gradient(120deg, rgba(224,236,249,0.9) 0%, rgba(240,245,255,0.9) 100%);
+  box-shadow: 0 8px 32px rgba(71,54,254,0.1);
 }
 
-.feature-card-text { flex: 1; }
+.proof-card:hover::before { transform: scaleY(1); }
 
-.feature-card-stat {
-  font-size: 15px;
-  font-weight: var(--weight-bold);
-  color: var(--lego-color-text-primary);
-  letter-spacing: -0.3px;
+.proof-card-icon {
+  font-size: 28px;
+  flex-shrink: 0;
 }
 
-.feature-card-desc {
-  font-size: 12px;
-  font-weight: var(--weight-regular);
-  color: var(--lego-color-text-secondary);
+.proof-card-stat {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--brand);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.proof-card-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
   margin-top: 2px;
 }
 
-.feature-card-visual {
-  width: 72px;
-  height: 72px;
-  flex-shrink: 0;
-  border-radius: var(--radius-s);
-  background: linear-gradient(135deg, rgba(71,54,254,0.08) 0%, rgba(71,54,254,0.03) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  transition: transform var(--transition-spring);
+.proof-card-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 2px;
 }
 
-.feature-card:hover .feature-card-visual {
-  transform: scale(1.1) rotate(5deg);
-}
-
-.why-best-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: var(--lego-spacing-16);
-  font-size: 14px;
-  font-weight: var(--weight-semibold);
-  color: var(--lego-color-text-brand);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  cursor: pointer;
-  transition: gap var(--transition-spring);
-  padding: var(--lego-spacing-8) 0;
-}
-
-.why-best-link:hover {
-  gap: 12px;
-}
-
-.why-best-arrow {
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  background: var(--brand-blue);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform var(--transition-spring);
-}
-
-.why-best-link:hover .why-best-arrow {
-  transform: translateX(4px);
-}
-
-/* ==========================================
-   DID YOU KNOW BANNER
-   ========================================== */
-.did-you-know {
-  margin: 0 var(--lego-spacing-16) var(--lego-spacing-16);
-  background: var(--tint-london-rain-70);
-  border-radius: var(--radius-l);
-  padding: var(--lego-spacing-20);
-  display: flex;
-  align-items: center;
-  gap: var(--lego-spacing-12);
-  overflow: hidden;
+/* =========================================================
+   DID YOU KNOW
+   ========================================================= */
+.dyk-section {
   position: relative;
-  border: 1px solid rgba(224,236,249,1);
-  cursor: pointer;
-  transition: transform var(--transition-spring), box-shadow var(--transition-base);
+  background: linear-gradient(135deg, #0c0c1a 0%, #0f0f24 100%);
+  padding: 40px 24px;
+  text-align: center;
+  overflow: hidden;
 }
 
-.did-you-know:hover {
-  transform: scale(1.01);
-  box-shadow: var(--shadow-md);
+.dyk-glow {
+  position: absolute;
+  width: 300px; height: 300px;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(71,54,254,0.12) 0%, transparent 60%);
+  filter: blur(40px);
 }
 
-.dyk-text { flex: 1; }
+.dyk-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  animation: floatY 2.5s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
 
 .dyk-title {
-  font-size: 16px;
-  font-weight: var(--weight-bold);
-  color: var(--lego-color-text-primary);
-  margin-bottom: 6px;
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .dyk-body {
-  font-size: 12px;
-  color: var(--lego-color-text-secondary);
-  line-height: 1.6;
-}
-
-.dyk-body .highlight {
-  font-weight: var(--weight-bold);
-  color: var(--lego-color-text-brand);
-}
-
-.dyk-visual {
-  font-size: 56px;
-  animation: antigravityFloatSlow 3s ease-in-out infinite;
-  flex-shrink: 0;
-}
-
-/* ==========================================
-   WARRANTY STATUS
-   ========================================== */
-.warranty-status {
-  padding: var(--lego-spacing-20) var(--lego-spacing-16);
-  background: white;
-}
-
-.warranty-status-title {
-  font-size: 16px;
-  font-weight: var(--weight-bold);
-  color: var(--lego-color-text-primary);
-  margin-bottom: 4px;
-}
-
-.warranty-status-sub {
-  font-size: 13px;
-  color: var(--lego-color-text-secondary);
-  margin-bottom: var(--lego-spacing-16);
-  line-height: 1.5;
-}
-
-/* Risk Graph */
-.risk-graph {
-  background: white;
-  border-radius: var(--radius-l);
-  padding: var(--lego-spacing-16);
-  border: 1px solid var(--tint-london-rain);
-  margin-bottom: var(--lego-spacing-16);
-  position: relative;
-  overflow: hidden;
-  transition: transform var(--transition-spring);
-}
-
-.risk-graph:hover { transform: translateY(-3px); }
-
-.risk-graph-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--lego-spacing-12);
-}
-
-.risk-legend {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10px;
-  color: var(--lego-color-text-secondary);
-}
-
-.risk-legend-dot {
-  width: 8px; height: 8px;
-  border-radius: 2px;
-}
-
-.risk-legend-dot.mfg { background: #a0c4ff; }
-.risk-legend-dot.platinum { background: var(--brand-blue); }
-
-.risk-chart-area {
-  height: 100px;
-  position: relative;
-  margin-bottom: var(--lego-spacing-8);
-}
-
-.risk-svg {
-  width: 100%;
-  height: 100%;
-}
-
-.risk-chart-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 10px;
-  color: var(--lego-color-text-secondary);
-}
-
-/* ==========================================
-   PLAN SELECTION TABS
-   ========================================== */
-.plan-tabs {
-  background: white;
-  border-bottom: 1px solid var(--tint-london-rain);
-}
-
-.plan-tabs-inner {
-  display: flex;
-}
-
-.plan-tab {
-  flex: 1;
-  padding: var(--lego-spacing-12) var(--lego-spacing-16);
   font-size: 14px;
-  font-weight: var(--weight-medium);
-  color: var(--lego-color-text-secondary);
-  border: none;
-  background: none;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all var(--transition-base);
+  color: rgba(255,255,255,0.5);
+  line-height: 1.7;
+  max-width: 300px;
+  margin: 0 auto;
   position: relative;
+  z-index: 1;
 }
 
-.plan-tab.active {
-  color: var(--brand-blue);
-  border-bottom-color: var(--brand-blue);
-  font-weight: var(--weight-bold);
+.dyk-highlight {
+  color: var(--danger);
+  font-weight: 800;
+  font-size: 18px;
 }
 
-.plan-tab-note {
-  font-size: 11px;
-  color: var(--lego-color-text-secondary);
-  padding: var(--lego-spacing-8) var(--lego-spacing-16);
-  background: rgba(224,236,249,0.3);
-}
-
-/* ==========================================
-   PLAN CARDS
-   ========================================== */
-.plan-cards {
-  padding: var(--lego-spacing-12) var(--lego-spacing-16);
-  display: flex;
-  flex-direction: column;
-  gap: var(--lego-spacing-12);
-  background: white;
-}
-
-.plan-card {
-  border-radius: var(--radius-m);
-  border: 2px solid var(--lego-color-border-default);
-  padding: var(--lego-spacing-16);
-  cursor: pointer;
-  transition: all var(--transition-spring);
-  position: relative;
-  overflow: hidden;
-}
-
-.plan-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(71,54,254,0.03) 0%, transparent 50%);
-  opacity: 0;
-  transition: opacity var(--transition-base);
-}
-
-.plan-card:hover {
-  border-color: var(--brand-blue);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(71,54,254,0.12);
-}
-
-.plan-card:hover::after { opacity: 1; }
-
-.plan-card.selected {
-  border-color: var(--brand-blue);
-  background: linear-gradient(135deg, rgba(71,54,254,0.04) 0%, white 100%);
-  box-shadow: 0 4px 16px rgba(71,54,254,0.15);
-}
-
-.plan-card-top {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--lego-spacing-12);
-}
-
-.plan-radio {
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  border: 2px solid var(--lego-color-border-default);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-  transition: all var(--transition-spring);
-}
-
-.plan-card.selected .plan-radio {
-  border-color: var(--brand-blue);
-  background: var(--brand-blue);
-}
-
-.plan-radio-inner {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: white;
-  transform: scale(0);
-  transition: transform var(--transition-spring);
-}
-
-.plan-card.selected .plan-radio-inner {
-  transform: scale(1);
-}
-
-.plan-card-info { flex: 1; }
-
-.plan-card-title {
-  font-size: 15px;
-  font-weight: var(--weight-bold);
-  color: var(--lego-color-text-primary);
-}
-
-.plan-card-price {
-  font-size: 22px;
-  font-weight: var(--weight-extrabold);
-  color: var(--brand-blue);
-  letter-spacing: -0.5px;
-  line-height: 1.1;
-}
-
-.plan-card-price-unit {
-  font-size: 13px;
-  font-weight: var(--weight-regular);
-  color: var(--lego-color-text-secondary);
-}
-
-.plan-card-validity {
-  font-size: 11px;
-  color: var(--lego-color-text-secondary);
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.validity-badge {
-  display: inline-block;
-  background: rgba(46,161,47,0.1);
-  color: var(--color-success);
-  font-size: 10px;
-  font-weight: var(--weight-semibold);
-  padding: 2px 6px;
-  border-radius: var(--radius-full);
-}
-
-.plan-card-selected-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--brand-blue);
-  color: white;
-  font-size: 11px;
-  font-weight: var(--weight-semibold);
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  margin-top: var(--lego-spacing-8);
-  animation: scaleIn 300ms var(--transition-spring);
-}
-
-.plan-remove {
-  font-size: 12px;
-  color: var(--color-danger);
-  font-weight: var(--weight-semibold);
-  text-decoration: underline;
-  cursor: pointer;
-  border: none;
-  background: none;
-  padding: 0;
-  transition: opacity var(--transition-fast);
-}
-
-.plan-remove:hover { opacity: 0.7; }
-
-/* ==========================================
-   STATS SECTION
-   ========================================== */
+/* =========================================================
+   STATS
+   ========================================================= */
 .stats-section {
-  margin: 0 var(--lego-spacing-16) var(--lego-spacing-16);
-  background: linear-gradient(135deg, var(--tint-london-rain) 0%, rgba(240,245,255,0.8) 100%);
-  border-radius: var(--radius-l);
-  padding: var(--lego-spacing-16);
+  margin: 0 16px 16px;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
+  border-radius: var(--radius);
+  padding: 24px;
   display: flex;
-  gap: var(--lego-spacing-16);
-  border: 1px solid rgba(224,236,249,1);
-  position: relative;
-  overflow: hidden;
+  gap: 20px;
+  border: 1px solid rgba(71,54,254,0.08);
 }
 
-.stats-section::after {
-  content: '';
-  position: absolute;
-  right: 0; top: 0;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4));
-  pointer-events: none;
-}
-
-.stat-item {
-  flex: 1;
-  position: relative;
-}
+.stat-card { flex: 1; }
 
 .stat-divider {
   width: 1px;
@@ -1201,253 +803,383 @@ body {
 }
 
 .stat-value {
-  font-size: 20px;
-  font-weight: var(--weight-extrabold);
-  color: var(--brand-blue);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--brand);
   letter-spacing: -0.5px;
   line-height: 1.1;
 }
 
 .stat-label {
   font-size: 11px;
-  color: var(--lego-color-text-secondary);
-  margin-top: 4px;
+  color: var(--text-2);
+  margin-top: 6px;
   line-height: 1.4;
 }
 
-.stat-source {
-  font-size: 10px;
-  color: rgba(91,91,91,0.7);
-  margin-top: var(--lego-spacing-8);
-  padding: 0 var(--lego-spacing-16) var(--lego-spacing-8);
+/* =========================================================
+   PLAN SELECTION
+   ========================================================= */
+.plan-section {
+  background: white;
+  padding: 32px 16px;
 }
 
-/* ==========================================
-   EXPERT CARD
-   ========================================== */
-.expert-card {
-  margin: 0 var(--lego-spacing-16) var(--lego-spacing-16);
-  background: white;
-  border-radius: var(--radius-l);
+.plan-section-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+}
+
+.plan-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  background: #f0f4f8;
+  padding: 3px;
+}
+
+.plan-tab {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s var(--spring);
+  position: relative;
   overflow: hidden;
-  border: 1px solid var(--tint-london-rain);
-  transition: transform var(--transition-spring), box-shadow var(--transition-base);
+  font-family: var(--font);
+}
+
+.plan-tab.active {
+  background: white;
+  color: var(--brand);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.plan-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plan-card {
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.4s var(--spring);
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-card:hover {
+  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(71,54,254,0.12);
+}
+
+.plan-card.selected {
+  border-color: var(--brand);
+  background: linear-gradient(135deg, rgba(71,54,254,0.03) 0%, white 100%);
+  box-shadow: 0 4px 20px rgba(71,54,254,0.15);
+}
+
+.plan-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.plan-radio {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.3s var(--spring);
+}
+
+.plan-card.selected .plan-radio {
+  border-color: var(--brand);
+  background: var(--brand);
+}
+
+.plan-radio-inner {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: white;
+  transform: scale(0);
+  transition: transform 0.3s var(--spring);
+}
+
+.plan-card.selected .plan-radio-inner { transform: scale(1); }
+
+.plan-card-info { flex: 1; }
+
+.plan-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.plan-card-price {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--brand);
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+
+.plan-card-price-unit {
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.plan-card-validity {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.validity-badge {
+  display: inline-block;
+  background: rgba(34,197,94,0.1);
+  color: var(--success);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
+.plan-card-selected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--brand);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  animation: scaleIn 0.3s var(--spring);
+}
+
+@keyframes scaleIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.plan-remove {
+  font-size: 12px;
+  color: var(--danger);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  transition: opacity 0.2s;
+  font-family: var(--font);
+}
+
+.plan-remove:hover { opacity: 0.7; }
+
+/* =========================================================
+   EXPERT
+   ========================================================= */
+.expert-section {
+  padding: 0 16px 16px;
+  background: white;
+}
+
+.expert-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #f8faff, #f0f4ff);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid rgba(71,54,254,0.06);
+  transition: all 0.4s var(--spring);
 }
 
 .expert-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.expert-card-inner {
-  display: flex;
-  align-items: center;
-  gap: var(--lego-spacing-16);
-  padding: var(--lego-spacing-20);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
 }
 
 .expert-avatar {
-  width: 72px; height: 72px;
-  border-radius: var(--radius-m);
-  background: linear-gradient(135deg, #c7d8f0 0%, #a0c4e0 100%);
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #c7d8f0, #a0c4e0);
   display: flex; align-items: center; justify-content: center;
-  font-size: 32px;
+  font-size: 28px;
   flex-shrink: 0;
-  transition: transform var(--transition-spring);
-}
-
-.expert-card:hover .expert-avatar {
-  transform: scale(1.08) rotate(3deg);
 }
 
 .expert-info { flex: 1; }
 
 .expert-name {
   font-size: 15px;
-  font-weight: var(--weight-bold);
-  color: var(--lego-color-text-primary);
+  font-weight: 700;
+  color: var(--text-1);
 }
 
 .expert-role {
   font-size: 12px;
-  color: var(--brand-blue);
-  font-weight: var(--weight-medium);
-  margin-bottom: 6px;
+  color: var(--brand);
+  font-weight: 500;
+  margin-bottom: 4px;
 }
 
 .expert-bio {
   font-size: 11px;
-  color: var(--lego-color-text-secondary);
+  color: var(--text-2);
   line-height: 1.5;
 }
 
-.expert-card-cta {
-  padding: 0 var(--lego-spacing-16) var(--lego-spacing-16);
-}
-
-/* ==========================================
+/* =========================================================
    DISCLAIMER
-   ========================================== */
+   ========================================================= */
 .disclaimer {
-  padding: var(--lego-spacing-16);
+  padding: 16px;
   font-size: 10px;
-  color: rgba(91,91,91,0.7);
+  color: rgba(0,0,0,0.35);
   line-height: 1.6;
-  background: rgba(224,236,249,0.3);
-  border-top: 1px solid var(--tint-london-rain);
+  background: #f8faff;
+  border-top: 1px solid rgba(0,0,0,0.05);
 }
 
-/* ==========================================
+/* =========================================================
    FOOTER CTA
-   ========================================== */
+   ========================================================= */
 .footer-cta {
   position: sticky;
   bottom: 0;
-  background: white;
-  border-top: 1px solid var(--tint-london-rain);
-  padding: var(--lego-spacing-16);
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0,0,0,0.06);
+  padding: 12px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 100;
-  box-shadow: 0 -8px 32px rgba(0,0,0,0.08);
+  z-index: 200;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.06);
 }
 
-.footer-cta-price {}
-
-.footer-cta-amount {
+.footer-price {
   font-size: 20px;
-  font-weight: var(--weight-extrabold);
-  color: var(--lego-color-text-primary);
+  font-weight: 800;
+  color: var(--text-1);
   letter-spacing: -0.5px;
 }
 
-.footer-cta-label {
-  font-size: 12px;
-  color: var(--lego-color-text-secondary);
+.footer-label {
+  font-size: 11px;
+  color: var(--text-2);
 }
 
-/* ==========================================
+/* =========================================================
    BUTTONS
-   ========================================== */
+   ========================================================= */
 .btn-primary {
-  background: var(--brand-blue);
+  display: inline-flex;
+  align-items: center;
+  background: var(--brand);
   color: white;
   border: none;
-  border-radius: var(--radius-m);
+  border-radius: 12px;
   padding: 14px 28px;
-  font-family: var(--brand-font);
+  font-family: var(--font);
   font-size: 15px;
-  font-weight: var(--weight-bold);
+  font-weight: 700;
   cursor: pointer;
-  transition: transform var(--transition-spring), box-shadow var(--transition-base), background var(--transition-fast);
+  transition: all 0.4s var(--spring);
   position: relative;
   overflow: hidden;
   letter-spacing: -0.2px;
-  min-width: 140px;
 }
 
 .btn-primary:hover {
-  background: var(--brand-blue-dark);
+  background: var(--brand-dark);
   transform: translateY(-2px) scale(1.02);
-  box-shadow: var(--shadow-brand);
+  box-shadow: 0 8px 32px rgba(71,54,254,0.3);
 }
 
 .btn-primary:active {
   transform: translateY(0) scale(0.98);
 }
 
-.btn-secondary {
-  background: white;
-  color: var(--brand-blue);
-  border: 2px solid var(--brand-blue);
-  border-radius: var(--radius-m);
-  padding: 12px 24px;
-  font-family: var(--brand-font);
-  font-size: 14px;
-  font-weight: var(--weight-semibold);
-  cursor: pointer;
-  width: 100%;
-  transition: all var(--transition-spring);
+/* =========================================================
+   RIPPLE EFFECT
+   ========================================================= */
+.ripple-container { position: relative; overflow: hidden; }
+
+.ripple-container .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  animation: ripple 600ms ease-out forwards;
+  pointer-events: none;
+  width: 40px; height: 40px;
+  margin-left: -20px; margin-top: -20px;
 }
 
-.btn-secondary:hover {
-  background: var(--brand-blue);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-brand);
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
 }
 
-/* ==========================================
-   ANTIGRAVITY PARALLAX WRAPPERS
-   ========================================== */
-.parallax-slow { will-change: transform; }
-.parallax-medium { will-change: transform; }
-.parallax-fast { will-change: transform; }
-
-/* ==========================================
-   SECTION DIVIDER
-   ========================================== */
-.section-gap {
-  height: var(--lego-spacing-8);
-  background: #f0f4f8;
+/* =========================================================
+   REVEAL SYSTEM
+   ========================================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s var(--spring);
 }
 
-/* ==========================================
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========================================================
    PARTICLE CANVAS
-   ========================================== */
+   ========================================================= */
 .particle-canvas {
   position: fixed;
   top: 0; left: 0;
   pointer-events: none;
-  z-index: 9997;
+  z-index: 1;
   width: 100%;
   height: 100%;
 }
 
-/* ==========================================
-   FLOATING ELEMENTS
-   ========================================== */
-.float-badge {
-  animation: antigravityFloat 3s ease-in-out infinite;
-}
-
-.float-slow {
-  animation: antigravityFloatSlow 4s ease-in-out infinite;
-}
-
-/* ==========================================
-   COUNTER NUMBER
-   ========================================== */
-.counter-num {
-  display: inline-block;
-  transition: all 0.05s ease;
-}
-
-/* ==========================================
-   LOADING STATE
-   ========================================== */
-@keyframes skeletonPulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
-
-/* ==========================================
-   SCROLL PROGRESS
-   ========================================== */
-.scroll-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--brand-blue), #a78bfa);
-  z-index: 9999;
-  transition: width 100ms linear;
-}
-
-/* ==========================================
+/* =========================================================
    RESPONSIVE
-   ========================================== */
+   ========================================================= */
 @media (max-width: 430px) {
   .app-shell { box-shadow: none; }
+  .hero-title { font-size: 30px; }
+  .showcase-title { font-size: 20px; }
+}
+
+@media (min-width: 431px) {
+  .app-shell {
+    box-shadow: 0 0 80px rgba(0,0,0,0.3);
+  }
 }

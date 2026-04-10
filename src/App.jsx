@@ -1,54 +1,31 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 
-/* ============================================================
-   CARS24 WARRANTY PAGE
-   Brand: Cars24 | Design Source: Figma WARRANTY-2025
-   Features: Antigravity cursor, parallax, magnetic buttons,
-             scroll reveals, ripple effects, counter animations
-   ============================================================ */
-
-// ── Hooks ──────────────────────────────────────────────────
-
-function useCursor() {
-  const dotRef = useRef(null)
-  const ringRef = useRef(null)
-  const pos = useRef({ x: 0, y: 0 })
-  const ring = useRef({ x: 0, y: 0 })
-  const raf = useRef(null)
-
+// ── Scroll-driven progress for a section ────────────────────
+function useSectionProgress(ref, startOffset = 0, endOffset = 1) {
+  const [progress, setProgress] = useState(0)
   useEffect(() => {
-    const onMove = (e) => {
-      pos.current = { x: e.clientX, y: e.clientY }
+    const el = ref.current
+    if (!el) return
+    const onScroll = () => {
+      const rect = el.getBoundingClientRect()
+      const vh = window.innerHeight
+      const totalTravel = rect.height + vh
+      const traveled = vh - rect.top
+      const raw = traveled / totalTravel
+      const clamped = Math.max(0, Math.min(1, (raw - startOffset) / (endOffset - startOffset)))
+      setProgress(clamped)
     }
-    window.addEventListener('mousemove', onMove)
-
-    const tick = () => {
-      if (dotRef.current) {
-        dotRef.current.style.left = pos.current.x + 'px'
-        dotRef.current.style.top = pos.current.y + 'px'
-      }
-      ring.current.x += (pos.current.x - ring.current.x) * 0.12
-      ring.current.y += (pos.current.y - ring.current.y) * 0.12
-      if (ringRef.current) {
-        ringRef.current.style.left = ring.current.x + 'px'
-        ringRef.current.style.top = ring.current.y + 'px'
-      }
-      raf.current = requestAnimationFrame(tick)
-    }
-    tick()
-
-    return () => {
-      window.removeEventListener('mousemove', onMove)
-      cancelAnimationFrame(raf.current)
-    }
-  }, [])
-
-  return { dotRef, ringRef }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [ref, startOffset, endOffset])
+  return progress
 }
 
+// ── Scroll reveal ───────────────────────────────────────────
 function useScrollReveal() {
   useEffect(() => {
-    const els = document.querySelectorAll('.reveal, .reveal-scale, .reveal-left, .reveal-right')
+    const els = document.querySelectorAll('.reveal')
     const obs = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -56,72 +33,13 @@ function useScrollReveal() {
           setTimeout(() => entry.target.classList.add('visible'), Number(delay))
         }
       })
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' })
-
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' })
     els.forEach(el => obs.observe(el))
     return () => obs.disconnect()
   })
 }
 
-function useScrollProgress() {
-  const barRef = useRef(null)
-  useEffect(() => {
-    const onScroll = () => {
-      const scrolled = window.scrollY
-      const total = document.documentElement.scrollHeight - window.innerHeight
-      const pct = total > 0 ? (scrolled / total) * 100 : 0
-      if (barRef.current) barRef.current.style.width = pct + '%'
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-  return barRef
-}
-
-function useParallax() {
-  useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY
-      document.querySelectorAll('[data-parallax]').forEach(el => {
-        const speed = parseFloat(el.dataset.parallax) || 0.3
-        el.style.transform = `translateY(${y * speed}px)`
-      })
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-}
-
-function useMagnetic(ref, strength = 0.4) {
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-
-    const onMove = (e) => {
-      const rect = el.getBoundingClientRect()
-      const cx = rect.left + rect.width / 2
-      const cy = rect.top + rect.height / 2
-      const dx = (e.clientX - cx) * strength
-      const dy = (e.clientY - cy) * strength
-      el.style.transform = `translate(${dx}px, ${dy}px) scale(1.04)`
-    }
-
-    const onLeave = () => {
-      el.style.transform = 'translate(0,0) scale(1)'
-      el.style.transition = 'transform 600ms cubic-bezier(0.34, 1.56, 0.64, 1)'
-    }
-
-    el.addEventListener('mousemove', onMove)
-    el.addEventListener('mouseleave', onLeave)
-    el.addEventListener('mouseenter', () => { el.style.transition = 'transform 80ms linear' })
-
-    return () => {
-      el.removeEventListener('mousemove', onMove)
-      el.removeEventListener('mouseleave', onLeave)
-    }
-  }, [])
-}
-
+// ── Counter animation ───────────────────────────────────────
 function useCounter(target, duration = 1200, trigger = true) {
   const [val, setVal] = useState(0)
   useEffect(() => {
@@ -129,16 +47,17 @@ function useCounter(target, duration = 1200, trigger = true) {
     const start = performance.now()
     const tick = (now) => {
       const elapsed = now - start
-      const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
+      const p = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - p, 3)
       setVal(Math.round(target * eased))
-      if (progress < 1) requestAnimationFrame(tick)
+      if (p < 1) requestAnimationFrame(tick)
     }
     requestAnimationFrame(tick)
   }, [target, trigger])
   return val
 }
 
+// ── Ripple ──────────────────────────────────────────────────
 function useRipple() {
   return useCallback((e) => {
     const btn = e.currentTarget
@@ -152,167 +71,182 @@ function useRipple() {
   }, [])
 }
 
-// ── Sub-components ──────────────────────────────────────────
+// ── 3D Car SVG (side-view with part zones) ──────────────────
+function Car3D({ rotation = 0, activePartIndex = -1, glow = false }) {
+  const perspectiveStyle = {
+    transform: `perspective(1200px) rotateY(${rotation}deg) rotateX(${Math.sin(rotation * 0.02) * 3}deg)`,
+    transition: 'transform 0.1s linear',
+    transformStyle: 'preserve-3d',
+  }
 
-function CarDiagram() {
-  const labels = [
-    { text: 'Electronics', style: { top: '8%', left: '14%' }, className: 'left' },
-    { text: 'Steering', style: { top: '22%', left: '12%' }, className: 'left' },
-    { text: 'Engine', style: { top: '38%', left: '10%' }, className: 'left' },
-    { text: 'Gearbox', style: { top: '54%', left: '10%' }, className: 'left' },
-    { text: 'Air conditioning', style: { top: '8%', right: '8%' } },
-    { text: 'Fuel system', style: { top: '22%', right: '4%' } },
-    { text: 'Transmission', style: { top: '62%', right: '4%' } },
-    { text: 'Drivetrain', style: { top: '76%', right: '14%' } },
-    { text: 'Driveshaft', style: { bottom: '8%', right: '20%' } },
-    { text: 'Computers', style: { bottom: '8%', left: '16%' } },
-    { text: 'Clutch', style: { bottom: '2%', left: '28%' } },
-    { text: 'Brakes', style: { top: '56%', right: '14%' } },
+  const parts = [
+    { id: 'engine', path: 'M 118,38 L 148,34 L 152,46 L 148,56 L 118,56 Z', color: '#4736FE' },
+    { id: 'transmission', path: 'M 70,50 L 118,50 L 118,70 L 70,70 Z', color: '#7c5cfc' },
+    { id: 'electronics', path: 'M 80,20 L 120,18 L 130,34 L 75,34 Z', color: '#06b6d4' },
+    { id: 'brakes-f', path: 'M 120,60 A 14 14 0 1 1 120,88 A 14 14 0 1 1 120,60', color: '#ef4444' },
+    { id: 'brakes-r', path: 'M 38,60 A 14 14 0 1 1 38,88 A 14 14 0 1 1 38,60', color: '#ef4444' },
+    { id: 'ac', path: 'M 90,22 L 110,20 L 112,32 L 88,32 Z', color: '#22c55e' },
+    { id: 'steering', path: 'M 120,28 L 135,26 L 138,36 L 120,36 Z', color: '#f59e0b' },
+    { id: 'drivetrain', path: 'M 42,72 L 120,72 L 120,78 L 42,78 Z', color: '#a855f7' },
   ]
 
   return (
-    <div className="car-diagram" style={{ height: 200, position: 'relative' }}>
-      {/* Car SVG */}
-      <div data-parallax="-0.04" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)' }}>
-        <svg width="160" height="80" viewBox="0 0 160 80" className="car-svg" aria-hidden="true">
-          {/* Car body */}
-          <rect x="8" y="38" width="144" height="30" rx="6" fill="#b8d4f0" />
-          <path d="M 30 38 Q 38 18 58 16 L 102 16 Q 122 18 130 38 Z" fill="#9bbde0" />
-          {/* Windows */}
-          <path d="M 46 36 Q 50 22 62 20 L 98 20 Q 110 22 114 36 Z" fill="#ddeef8" opacity="0.8"/>
-          <line x1="80" y1="20" x2="80" y2="36" stroke="#b8d4f0" strokeWidth="1.5"/>
-          {/* Wheels */}
-          <circle cx="38" cy="68" r="12" fill="#2d3748"/>
-          <circle cx="38" cy="68" r="7" fill="#4a5568"/>
-          <circle cx="38" cy="68" r="3" fill="#e2e8f0"/>
-          <circle cx="122" cy="68" r="12" fill="#2d3748"/>
-          <circle cx="122" cy="68" r="7" fill="#4a5568"/>
-          <circle cx="122" cy="68" r="3" fill="#e2e8f0"/>
-          {/* Headlights */}
-          <rect x="145" y="42" width="8" height="6" rx="2" fill="#fef9c3"/>
-          <rect x="7" y="42" width="8" height="6" rx="2" fill="#fef3c7" opacity="0.7"/>
-          {/* Grille */}
-          <rect x="148" y="50" width="6" height="3" rx="1" fill="#94a3b8"/>
-          {/* CARS24 text */}
-          <text x="80" y="30" textAnchor="middle" fontSize="6" fontWeight="bold" fill="#4736FE" fontFamily="DM Sans, sans-serif">CARS24</text>
-          {/* Antenna dots */}
-          <circle cx="52" cy="40" r="2.5" fill="#4736FE" opacity="0.7"/>
-          <circle cx="68" cy="42" r="2.5" fill="#4736FE" opacity="0.7"/>
-          <circle cx="80" cy="42" r="2.5" fill="#4736FE" opacity="0.7"/>
-          <circle cx="92" cy="42" r="2.5" fill="#4736FE" opacity="0.7"/>
-          <circle cx="108" cy="40" r="2.5" fill="#4736FE" opacity="0.7"/>
-        </svg>
-      </div>
-
-      {/* Labels */}
-      {labels.map((l, i) => (
-        <span
-          key={i}
-          className={`car-label${l.className ? ' ' + l.className : ''}`}
-          style={{ ...l.style, animationDelay: `${i * 0.1}s` }}
-        >
-          {l.text}
-        </span>
-      ))}
-
-      {/* Connector dots */}
-      {[
-        { top: '42%', left: '26%' }, { top: '52%', left: '38%' },
-        { top: '48%', left: '50%' }, { top: '45%', left: '62%' },
-        { top: '42%', left: '74%' },
-      ].map((pos, i) => (
-        <div key={i} className="car-dot" style={{ ...pos, animationDelay: `${i * 0.3}s` }} />
-      ))}
-    </div>
-  )
-}
-
-function RiskGraph({ visible }) {
-  const path1 = "M 10,80 Q 40,78 80,60 T 270,30"
-  const path2 = "M 80,60 Q 120,50 160,25 T 270,10"
-
-  return (
-    <div className="risk-chart-area">
-      <svg className="risk-svg" viewBox="0 0 280 90" preserveAspectRatio="none">
+    <div className="car-3d-wrapper" style={perspectiveStyle}>
+      <svg viewBox="0 0 160 100" className="car-3d-svg" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="mfgGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#a0c4ff"/>
-            <stop offset="100%" stopColor="#c4d9ff"/>
+          <filter id="carGlow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="partGlow">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#1e293b"/>
+            <stop offset="50%" stopColor="#334155"/>
+            <stop offset="100%" stopColor="#1e293b"/>
           </linearGradient>
-          <linearGradient id="platGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#4736FE"/>
-            <stop offset="100%" stopColor="#7c5cfc"/>
+          <linearGradient id="bodySheen" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="rgba(255,255,255,0.15)"/>
+            <stop offset="50%" stopColor="rgba(255,255,255,0.05)"/>
+            <stop offset="100%" stopColor="rgba(255,255,255,0)"/>
           </linearGradient>
+          <linearGradient id="windowGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#60a5fa"/>
+            <stop offset="100%" stopColor="#1e40af"/>
+          </linearGradient>
+          <radialGradient id="headlightGrad" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0%" stopColor="#fef9c3"/>
+            <stop offset="100%" stopColor="#fbbf24"/>
+          </radialGradient>
         </defs>
 
-        {/* Grid lines */}
-        {[20, 40, 60].map(y => (
-          <line key={y} x1="10" y1={y} x2="270" y2={y} stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="4,4"/>
+        {/* Part highlight zones */}
+        {parts.map((part, i) => (
+          <path
+            key={part.id}
+            d={part.path}
+            fill={activePartIndex === i ? part.color : 'transparent'}
+            opacity={activePartIndex === i ? 0.3 : 0}
+            filter={activePartIndex === i ? 'url(#partGlow)' : undefined}
+            className={activePartIndex === i ? 'part-active' : ''}
+          />
         ))}
 
-        {/* Manufacturer warranty zone */}
-        <path d={`M 10,80 Q 40,78 80,60 T 270,30 L 270,90 L 10,90 Z`}
-          fill="url(#mfgGrad)" opacity="0.25"/>
-        <path d={path1} fill="none" stroke="url(#mfgGrad)" strokeWidth="2"/>
+        {/* Car body - lower */}
+        <rect x="8" y="42" width="148" height="32" rx="6" fill="url(#bodyGrad)" filter={glow ? 'url(#carGlow)' : undefined}/>
+        <rect x="8" y="42" width="148" height="32" rx="6" fill="url(#bodySheen)"/>
 
-        {/* Platinum cover extends */}
-        <path d={`M 80,60 Q 120,50 160,25 T 270,10 L 270,90 L 80,90 Z`}
-          fill="url(#platGrad)" opacity="0.12"/>
-        <path d={path2} fill="none" stroke="url(#platGrad)" strokeWidth="2.5"
-          strokeDasharray={visible ? '300' : '300'}
-          strokeDashoffset={visible ? '0' : '300'}
-          style={{ transition: 'stroke-dashoffset 1.5s ease 0.3s' }}/>
+        {/* Car body - roof */}
+        <path d="M 32,42 Q 42,16 65,14 L 110,14 Q 132,16 140,42 Z" fill="url(#bodyGrad)"/>
+        <path d="M 32,42 Q 42,16 65,14 L 110,14 Q 132,16 140,42 Z" fill="url(#bodySheen)"/>
 
-        {/* Vertical divider: end of mfg warranty */}
-        <line x1="80" y1="10" x2="80" y2="85" stroke="#a0c4ff" strokeWidth="1" strokeDasharray="3,3"/>
+        {/* Windows */}
+        <path d="M 48,40 Q 52,22 68,18 L 106,18 Q 120,20 126,40 Z" fill="url(#windowGrad)" opacity="0.7"/>
+        <line x1="86" y1="18" x2="86" y2="40" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
 
-        {/* Labels */}
-        <text x="30" y="88" fontSize="7" fill="#64748b" fontFamily="DM Sans">Mfg warranty</text>
-        <text x="90" y="88" fontSize="7" fill="#4736FE" fontFamily="DM Sans">Platinum cover</text>
-        <text x="258" y="25" fontSize="6" fill="#ef4444" fontFamily="DM Sans" writingMode="vertical-lr">Risk</text>
+        {/* Chrome trim */}
+        <line x1="10" y1="55" x2="152" y2="55" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5"/>
+
+        {/* Front bumper */}
+        <path d="M 148,44 Q 158,46 158,54 Q 158,62 148,64 L 148,44 Z" fill="#1e293b"/>
+        <rect x="154" y="46" width="4" height="4" rx="1" fill="url(#headlightGrad)"/>
+        <rect x="154" y="58" width="4" height="3" rx="1" fill="#ef4444" opacity="0.6"/>
+
+        {/* Rear */}
+        <path d="M 12,44 Q 4,46 4,54 Q 4,62 12,64 L 12,44 Z" fill="#1e293b"/>
+        <rect x="2" y="46" width="4" height="4" rx="1" fill="#ef4444" opacity="0.8"/>
+        <rect x="2" y="58" width="4" height="3" rx="1" fill="#ef4444" opacity="0.6"/>
+
+        {/* Front wheel */}
+        <circle cx="125" cy="74" r="14" fill="#0f172a"/>
+        <circle cx="125" cy="74" r="12" fill="#1e293b" stroke="#334155" strokeWidth="1"/>
+        <circle cx="125" cy="74" r="8" fill="#334155"/>
+        <circle cx="125" cy="74" r="3" fill="#64748b"/>
+        {/* Wheel spokes */}
+        {[0,60,120,180,240,300].map(a => (
+          <line key={a} x1={125+Math.cos(a*Math.PI/180)*4} y1={74+Math.sin(a*Math.PI/180)*4}
+            x2={125+Math.cos(a*Math.PI/180)*10} y2={74+Math.sin(a*Math.PI/180)*10}
+            stroke="#475569" strokeWidth="1.5" strokeLinecap="round"/>
+        ))}
+        {/* Brake disc glow */}
+        {activePartIndex === 3 && <circle cx="125" cy="74" r="10" fill="none" stroke="#ef4444" strokeWidth="2" opacity="0.6" className="part-active"/>}
+
+        {/* Rear wheel */}
+        <circle cx="38" cy="74" r="14" fill="#0f172a"/>
+        <circle cx="38" cy="74" r="12" fill="#1e293b" stroke="#334155" strokeWidth="1"/>
+        <circle cx="38" cy="74" r="8" fill="#334155"/>
+        <circle cx="38" cy="74" r="3" fill="#64748b"/>
+        {[0,60,120,180,240,300].map(a => (
+          <line key={a} x1={38+Math.cos(a*Math.PI/180)*4} y1={74+Math.sin(a*Math.PI/180)*4}
+            x2={38+Math.cos(a*Math.PI/180)*10} y2={74+Math.sin(a*Math.PI/180)*10}
+            stroke="#475569" strokeWidth="1.5" strokeLinecap="round"/>
+        ))}
+        {activePartIndex === 4 && <circle cx="38" cy="74" r="10" fill="none" stroke="#ef4444" strokeWidth="2" opacity="0.6" className="part-active"/>}
+
+        {/* CARS24 badge */}
+        <rect x="72" y="48" width="32" height="10" rx="2" fill="rgba(71,54,254,0.2)" stroke="rgba(71,54,254,0.4)" strokeWidth="0.5"/>
+        <text x="88" y="55.5" textAnchor="middle" fontSize="5.5" fontWeight="bold" fill="#818cf8" fontFamily="DM Sans, sans-serif">CARS24</text>
       </svg>
     </div>
   )
 }
 
-function FeatureCard({ icon, stat, desc, delay = 0 }) {
-  const ref = useRef(null)
-  const ringRef = useRef(null)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const onMove = (e) => {
-      const r = el.getBoundingClientRect()
-      const x = ((e.clientX - r.left) / r.width - 0.5) * 12
-      const y = ((e.clientY - r.top) / r.height - 0.5) * 8
-      el.style.transform = `translateX(${4 + x * 0.3}px) translateY(${-2 + y * 0.3}px) perspective(400px) rotateX(${-y * 0.5}deg) rotateY(${x * 0.5}deg)`
-    }
-    const onLeave = () => {
-      el.style.transform = ''
-      el.style.transition = 'transform 600ms cubic-bezier(0.34, 1.56, 0.64, 1)'
-    }
-    el.addEventListener('mousemove', onMove)
-    el.addEventListener('mouseleave', onLeave)
-    el.addEventListener('mouseenter', () => { el.style.transition = 'transform 80ms linear' })
-    return () => {
-      el.removeEventListener('mousemove', onMove)
-      el.removeEventListener('mouseleave', onLeave)
-    }
-  }, [])
+// ── Floating Parts (antigravity) ────────────────────────────
+function FloatingParts({ progress }) {
+  const orbitParts = [
+    { emoji: '⚙️', label: 'Engine', angle: 0 },
+    { emoji: '🔧', label: 'Gearbox', angle: 60 },
+    { emoji: '❄️', label: 'A/C', angle: 120 },
+    { emoji: '🛞', label: 'Brakes', angle: 180 },
+    { emoji: '⚡', label: 'Electronics', angle: 240 },
+    { emoji: '🔩', label: 'Drivetrain', angle: 300 },
+  ]
 
   return (
-    <div className="feature-card reveal" ref={ref} data-delay={delay} style={{ transformOrigin: 'center' }}>
-      <div className="feature-card-text">
-        <div className="feature-card-stat">{stat}</div>
-        <div className="feature-card-desc">{desc}</div>
-      </div>
-      <div className="feature-card-visual">{icon}</div>
+    <div className="floating-parts">
+      {orbitParts.map((part, i) => {
+        const baseAngle = part.angle + progress * 360
+        const rad = (baseAngle * Math.PI) / 180
+        const rx = 42, ry = 18
+        const x = Math.cos(rad) * rx
+        const y = Math.sin(rad) * ry
+        const scale = 0.6 + (Math.sin(rad) + 1) * 0.25
+        const opacity = 0.4 + (Math.sin(rad) + 1) * 0.3
+
+        return (
+          <div
+            key={i}
+            className="orbit-part"
+            style={{
+              transform: `translate(${x}%, ${y}%) scale(${scale})`,
+              opacity,
+              zIndex: Math.sin(rad) > 0 ? 2 : 0,
+            }}
+          >
+            <span className="orbit-emoji">{part.emoji}</span>
+            <span className="orbit-label">{part.label}</span>
+          </div>
+        )
+      })}
     </div>
   )
 }
 
-function PlanCard({ title, price, unit, months, validity, selected, onSelect, onRemove }) {
+// ── Coverage showcase items ─────────────────────────────────
+const coverageItems = [
+  { title: 'Engine', desc: 'Complete engine block, pistons, valves, timing chain & head gasket', icon: '⚙️', partIndex: 0, stat: '$12,000+', statLabel: 'avg repair cost' },
+  { title: 'Transmission', desc: 'Gearbox, torque converter, shift solenoids & valve body', icon: '🔧', partIndex: 1, stat: '$8,500+', statLabel: 'avg repair cost' },
+  { title: 'Electronics & Computing', desc: 'ECU, TCU, sensors, wiring harness & control modules', icon: '⚡', partIndex: 2, stat: '$4,200+', statLabel: 'avg repair cost' },
+  { title: 'Braking System', desc: 'ABS module, calipers, master cylinder & brake booster', icon: '🛞', partIndex: 3, stat: '$3,800+', statLabel: 'avg repair cost' },
+  { title: 'Air Conditioning', desc: 'Compressor, condenser, evaporator & expansion valve', icon: '❄️', partIndex: 5, stat: '$2,500+', statLabel: 'avg repair cost' },
+  { title: 'Steering System', desc: 'Power steering pump, rack & pinion, tie rods', icon: '🎯', partIndex: 6, stat: '$3,200+', statLabel: 'avg repair cost' },
+  { title: 'Drivetrain', desc: 'Driveshaft, CV joints, differential & transfer case', icon: '🔩', partIndex: 7, stat: '$5,600+', statLabel: 'avg repair cost' },
+]
+
+// ── Plan Card ───────────────────────────────────────────────
+function PlanCard({ title, price, unit, validity, selected, onSelect, onRemove }) {
   const ripple = useRipple()
   return (
     <div
@@ -320,9 +254,7 @@ function PlanCard({ title, price, unit, months, validity, selected, onSelect, on
       onClick={(e) => { ripple(e); onSelect() }}
     >
       <div className="plan-card-top">
-        <div className="plan-radio">
-          <div className="plan-radio-inner"/>
-        </div>
+        <div className="plan-radio"><div className="plan-radio-inner"/></div>
         <div className="plan-card-info">
           <div className="plan-card-title">{title}</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
@@ -330,17 +262,12 @@ function PlanCard({ title, price, unit, months, validity, selected, onSelect, on
             <span className="plan-card-price-unit">{unit}</span>
           </div>
           <div className="plan-card-validity">
-            <span className="validity-badge">✓ Active</span>
-            {validity}
+            <span className="validity-badge">✓ Active</span>{validity}
           </div>
           {selected && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
-              <div className="plan-card-selected-badge">
-                <span>✓</span> Added to plan
-              </div>
-              <button className="plan-remove" onClick={(e) => { e.stopPropagation(); onRemove() }}>
-                Remove
-              </button>
+              <div className="plan-card-selected-badge"><span>✓</span> Added to plan</div>
+              <button className="plan-remove" onClick={(e) => { e.stopPropagation(); onRemove() }}>Remove</button>
             </div>
           )}
         </div>
@@ -350,24 +277,19 @@ function PlanCard({ title, price, unit, months, validity, selected, onSelect, on
 }
 
 // ── Main App ────────────────────────────────────────────────
-
 export default function App() {
-  const { dotRef, ringRef } = useCursor()
-  const scrollBarRef = useScrollProgress()
   useScrollReveal()
-  useParallax()
 
-  const proceedRef = useRef(null)
-  const skipRef = useRef(null)
-  useMagnetic(proceedRef, 0.35)
-  useMagnetic(skipRef, 0.25)
+  const heroRef = useRef(null)
+  const showcaseRef = useRef(null)
+  const statsRef = useRef(null)
 
+  const heroProgress = useSectionProgress(heroRef, 0, 0.5)
+  const showcaseProgress = useSectionProgress(showcaseRef, 0.05, 0.95)
+
+  const [statVisible, setStatVisible] = useState(false)
   const [activeTab, setActiveTab] = useState('loan')
   const [selectedPlan, setSelectedPlan] = useState(1)
-  const [statVisible, setStatVisible] = useState(false)
-  const [graphVisible, setGraphVisible] = useState(false)
-  const statsRef = useRef(null)
-  const graphRef = useRef(null)
   const ripple = useRipple()
 
   const stat1 = useCounter(25000, 1400, statVisible)
@@ -376,39 +298,43 @@ export default function App() {
   useEffect(() => {
     const obs = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) setStatVisible(true) },
-      { threshold: 0.4 }
+      { threshold: 0.3 }
     )
     if (statsRef.current) obs.observe(statsRef.current)
     return () => obs.disconnect()
   }, [])
 
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setGraphVisible(true) },
-      { threshold: 0.3 }
-    )
-    if (graphRef.current) obs.observe(graphRef.current)
-    return () => obs.disconnect()
-  }, [])
+  // Map showcase scroll to active coverage item
+  const activeShowcaseIndex = Math.min(
+    coverageItems.length - 1,
+    Math.max(0, Math.floor(showcaseProgress * coverageItems.length))
+  )
+  const activeItem = coverageItems[activeShowcaseIndex] || coverageItems[0]
+
+  // Hero car animation
+  const carFlyX = Math.max(0, (1 - heroProgress * 2.5)) * 120
+  const carFlyScale = 0.3 + Math.min(1, heroProgress * 2) * 0.7
+  const carFlyOpacity = Math.min(1, heroProgress * 3)
+
+  // Showcase car rotation
+  const showcaseRotation = showcaseProgress * 45 - 15
 
   const plans = [
     { id: 0, title: 'Up to 12 months cover', price: '$38', unit: '/week', months: 12, validity: 'Warranty & RSA till Oct 2025' },
-    { id: 1, title: 'Up to 12 months cover', price: '$38', unit: '/week', months: 12, validity: 'Warranty & RSA till Oct 2026', premium: true },
+    { id: 1, title: 'Up to 12 months cover', price: '$38', unit: '/week', months: 12, validity: 'Warranty & RSA till Oct 2026' },
   ]
 
   return (
     <>
-      {/* Cursor */}
-      <div className="cursor-dot" ref={dotRef}/>
-      <div className="cursor-ring" ref={ringRef}/>
+      {/* Scroll progress */}
+      <div className="scroll-progress-track">
+        <div className="scroll-progress-bar" id="scrollBar"/>
+      </div>
 
-      {/* Scroll progress bar */}
-      <div className="scroll-progress" ref={scrollBarRef}/>
-
-      <div className="app-shell" data-brand="cars24">
+      <div className="app-shell">
 
         {/* ── HEADER ── */}
-        <header className="header" style={{ animation: 'floatUp 500ms ease both' }}>
+        <header className="header">
           <div className="header-bar">
             <button className="back-btn" aria-label="Go back">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -416,191 +342,177 @@ export default function App() {
               </svg>
             </button>
             <div>
-              <div className="header-car-name">2016 Landrover Rangerover</div>
-              <div className="header-car-year">Vehicle warranty options</div>
+              <div className="header-car-name">2016 Range Rover Sport</div>
+              <div className="header-car-sub">Vehicle warranty options</div>
             </div>
           </div>
-
-          {/* Progress stepper */}
           <div className="stepper">
-            <div className="stepper-pills">
-              {[
-                { label: 'CARS24 Cover', state: 'active' },
-                { label: 'Payment options', state: 'inactive' },
-                { label: 'Checkout', state: 'inactive' },
-              ].map((s, i) => (
-                <div key={i} className={`stepper-pill ${s.state}`}>
-                  {s.state === 'active' && <div className="stepper-dot"/>}
-                  {s.label}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* DAP */}
-          <div className="dap-bar">
-            <span className="dap-label">Drive away price</span>
-            <span className="dap-price">$51,487</span>
+            {['CARS24 Cover', 'Payment', 'Checkout'].map((s, i) => (
+              <div key={i} className={`stepper-pill ${i === 0 ? 'active' : ''}`}>{s}</div>
+            ))}
           </div>
         </header>
 
-        {/* ── HERO ── */}
-        <section className="hero" style={{ animation: 'floatUp 600ms ease 100ms both' }}>
-          <div className="hero-inner">
-            <div className="hero-text">
-              <div className="hero-eyebrow">Extend your warranty</div>
-              <div className="hero-title">
-                <span className="brand-blue">CARS24</span><br/>
-                Platinum cover
-              </div>
-              <div className="hero-subtitle">
-                Save big on unexpected repair costs with ultimate protection.
-              </div>
+        {/* ── CINEMATIC HERO ── */}
+        <section className="hero-cinema" ref={heroRef}>
+          <div className="hero-bg">
+            <div className="hero-grid"/>
+            <div className="hero-glow"/>
+            <div className="hero-glow-2"/>
+          </div>
+
+          <div className="hero-content">
+            <div className="hero-eyebrow">
+              <div className="hero-eyebrow-line"/>
+              EXTENDED WARRANTY
+              <div className="hero-eyebrow-line"/>
+            </div>
+            <h1 className="hero-title">
+              <span className="hero-title-brand">CARS24</span>
+              <br/>Platinum Cover
+            </h1>
+            <p className="hero-subtitle">
+              Ultimate protection for your Range Rover.<br/>
+              Over <strong>5,000+ parts</strong> covered.
+            </p>
+
+            {/* Car flies in */}
+            <div
+              className="hero-car-stage"
+              style={{
+                transform: `translateX(${carFlyX}%) scale(${carFlyScale})`,
+                opacity: carFlyOpacity,
+              }}
+            >
+              <Car3D rotation={heroProgress * 20 - 10} glow={heroProgress > 0.3}/>
+              <div className="hero-car-reflection"/>
+              <div className="hero-car-shadow"/>
             </div>
 
-            <div className="stamp-badge" data-parallax="-0.06">
+            <FloatingParts progress={heroProgress}/>
+
+            {/* Stamp badge */}
+            <div className="stamp-badge">
               <div className="stamp-inner">
-                <div className="stamp-upto">Upto</div>
-                <div className="stamp-months">36</div>
-                <div style={{ fontSize: 10, color: 'white', fontWeight: 700, transform: 'rotate(-15deg)', lineHeight: 1 }}>months</div>
-                <div className="stamp-protection">Protection</div>
+                <span className="stamp-upto">UPTO</span>
+                <span className="stamp-months">36</span>
+                <span className="stamp-label">months</span>
+                <span className="stamp-protection">PROTECTION</span>
               </div>
             </div>
+          </div>
+
+          <div className="hero-scroll-hint">
+            <div className="scroll-mouse">
+              <div className="scroll-dot"/>
+            </div>
+            <span>Scroll to explore</span>
           </div>
         </section>
 
-        <div className="section-gap"/>
+        {/* ── 3D CAR SHOWCASE — SCROLL PINNED ── */}
+        <section className="showcase-section" ref={showcaseRef}>
+          <div className="showcase-sticky">
+            <div className="showcase-bg-grid"/>
 
-        {/* ── COVERAGE CARD ── */}
-        <div className="reveal" data-delay="100">
-          <div className="coverage-card">
-            <div className="coverage-header">
-              <div className="coverage-header-title">Manufacturer level coverage</div>
-              <div className="coverage-header-sub">
-                Over <span className="highlight">5000</span> parts & labour cost covered
+            <div className="showcase-header reveal">
+              <div className="showcase-eyebrow">What's covered</div>
+              <h2 className="showcase-title">Manufacturer-level<br/>protection</h2>
+            </div>
+
+            {/* 3D Car with active part */}
+            <div className="showcase-car-container">
+              <Car3D
+                rotation={showcaseRotation}
+                activePartIndex={activeItem.partIndex}
+                glow
+              />
+              <div className="showcase-car-shadow"/>
+
+              {/* Scan line */}
+              <div
+                className="scan-line"
+                style={{ top: `${20 + showcaseProgress * 60}%` }}
+              />
+            </div>
+
+            {/* Active part info */}
+            <div className="showcase-part-info" key={activeShowcaseIndex}>
+              <div className="part-icon">{activeItem.icon}</div>
+              <div className="part-details">
+                <div className="part-number">{String(activeShowcaseIndex + 1).padStart(2, '0')} / {String(coverageItems.length).padStart(2, '0')}</div>
+                <h3 className="part-title">{activeItem.title}</h3>
+                <p className="part-desc">{activeItem.desc}</p>
+                <div className="part-stat">
+                  <span className="part-stat-value">{activeItem.stat}</span>
+                  <span className="part-stat-label">{activeItem.statLabel}</span>
+                </div>
               </div>
             </div>
 
-            <div className="coverage-diagram">
-              <CarDiagram/>
-            </div>
-
-            <div
-              className="coverage-footer ripple-container"
-              onClick={ripple}
-              role="button"
-              tabIndex={0}
-            >
-              <span className="coverage-footer-text">See what's covered</span>
-              <div className="coverage-footer-arrow">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M3 6h6M7 4l2 2-2 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
+            {/* Progress dots */}
+            <div className="showcase-dots">
+              {coverageItems.map((_, i) => (
+                <div key={i} className={`showcase-dot ${i === activeShowcaseIndex ? 'active' : ''} ${i < activeShowcaseIndex ? 'done' : ''}`}/>
+              ))}
             </div>
           </div>
-        </div>
-
-        <div className="section-gap"/>
+        </section>
 
         {/* ── SOCIAL PROOF ── */}
-        <section className="social-proof">
+        <section className="proof-section">
           <div className="reveal">
-            <div className="section-title">The best in Australia.</div>
-            <div className="section-subtitle">Choice of 5,000+ users.</div>
+            <div className="proof-eyebrow">Trusted by thousands</div>
+            <h2 className="proof-title">The best warranty<br/>in Australia.</h2>
           </div>
 
-          <div className="feature-cards">
-            <FeatureCard
-              icon="✅"
-              stat="99% approval rate*"
-              desc="We honour all genuine claims."
-              delay={100}
-            />
-            <FeatureCard
-              icon="🚗"
-              stat="Warranty with no km limit*"
-              desc="Drive as much as you please."
-              delay={200}
-            />
-            <FeatureCard
-              icon="♾️"
-              stat="No claim limit"
-              desc="Claim upto the value of the car."
-              delay={300}
-            />
-          </div>
-
-          <div
-            className="why-best-link reveal"
-            data-delay="400"
-            role="button"
-            tabIndex={0}
-          >
-            Why we're the best in the market?
-            <div className="why-best-arrow">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M3 6h6M7 4l2 2-2 2" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
+          <div className="proof-cards">
+            {[
+              { stat: '99%', label: 'Claim approval rate', desc: 'We honour all genuine claims.', icon: '✅' },
+              { stat: '∞', label: 'No kilometre limit', desc: 'Drive as much as you please.', icon: '🛣️' },
+              { stat: '100%', label: 'No claim limit', desc: 'Claim up to the value of the car.', icon: '💎' },
+            ].map((card, i) => (
+              <div key={i} className="proof-card reveal" data-delay={i * 150}>
+                <div className="proof-card-icon">{card.icon}</div>
+                <div className="proof-card-stat">{card.stat}</div>
+                <div className="proof-card-label">{card.label}</div>
+                <div className="proof-card-desc">{card.desc}</div>
+              </div>
+            ))}
           </div>
         </section>
-
-        <div className="section-gap"/>
 
         {/* ── DID YOU KNOW ── */}
-        <div className="did-you-know reveal" data-delay="0">
-          <div className="dyk-text">
-            <div className="dyk-title">Did you know?</div>
-            <div className="dyk-body">
-              Engine repairs cost upwards of{' '}
-              <span className="highlight">$10,000</span>
-              {' '}in Australia. Get years of protection for a fraction of the cost with an extended warranty.
-            </div>
+        <section className="dyk-section reveal">
+          <div className="dyk-glow"/>
+          <div className="dyk-icon">💡</div>
+          <h3 className="dyk-title">Did you know?</h3>
+          <p className="dyk-body">
+            Engine repairs cost upwards of <strong className="dyk-highlight">$10,000</strong> in Australia.
+            Get years of protection for a fraction of the cost.
+          </p>
+        </section>
+
+        {/* ── STATS ── */}
+        <section className="stats-section reveal" ref={statsRef}>
+          <div className="stat-card">
+            <div className="stat-value">${stat1.toLocaleString()}</div>
+            <div className="stat-label">Total repair costs paid out<br/>for Range Rover Sport</div>
           </div>
-          <div className="dyk-visual" data-parallax="-0.05">🚗</div>
-        </div>
-
-        <div className="section-gap"/>
-
-        {/* ── WARRANTY STATUS ── */}
-        <section className="warranty-status" ref={graphRef}>
-          <div className="reveal">
-            <div className="warranty-status-title">Your Landrover Rangerover's manufacturer warranty is active till 23 Aug 2026.</div>
-            <div className="warranty-status-sub">Stay protected with CARS24 Platinum cover.</div>
-          </div>
-
-          <div className="risk-graph reveal" data-delay="150">
-            <div className="risk-graph-header">
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--lego-color-text-primary)' }}>
-                Breakdown risk over time
-              </div>
-              <div style={{ display: 'flex', gap: 12 }}>
-                <div className="risk-legend">
-                  <div className="risk-legend-dot mfg"/>Mfg warranty
-                </div>
-                <div className="risk-legend">
-                  <div className="risk-legend-dot platinum"/>Platinum
-                </div>
-              </div>
-            </div>
-
-            <RiskGraph visible={graphVisible}/>
-
-            <div className="risk-chart-labels">
-              <span>Today</span>
-              <span>12 months</span>
-              <span>24 months</span>
-              <span>36 months</span>
-            </div>
+          <div className="stat-divider"/>
+          <div className="stat-card">
+            <div className="stat-value">{stat2.toLocaleString()}+</div>
+            <div className="stat-label">Claims processed<br/>by CARS24</div>
           </div>
         </section>
 
-        <div className="section-gap"/>
-
         {/* ── PLAN SELECTION ── */}
-        <div className="plan-tabs">
-          <div className="plan-tabs-inner">
+        <section className="plan-section">
+          <div className="reveal">
+            <div className="plan-section-title">Choose your plan</div>
+          </div>
+
+          <div className="plan-tabs">
             {[
               { id: 'loan', label: 'Add to loan' },
               { id: 'outright', label: 'Pay outright' },
@@ -614,114 +526,85 @@ export default function App() {
               </button>
             ))}
           </div>
-          <div className="plan-tab-note">
-            Price of plan will be added to your {activeTab === 'loan' ? 'loan repayments' : 'upfront payment'}.
-          </div>
-        </div>
 
-        <div className="plan-cards">
-          {plans.map((plan) => (
-            <div key={plan.id} className="reveal" data-delay={plan.id * 120}>
-              <PlanCard
-                {...plan}
-                selected={selectedPlan === plan.id}
-                onSelect={() => setSelectedPlan(plan.id)}
-                onRemove={() => setSelectedPlan(null)}
-              />
-            </div>
-          ))}
-        </div>
-
-        <div className="section-gap"/>
-
-        {/* ── STATS ── */}
-        <div ref={statsRef}>
-          <div className="stats-section reveal">
-            <div className="stat-item">
-              <div className="stat-value">
-                ${stat1.toLocaleString()}
+          <div className="plan-cards">
+            {plans.map((plan) => (
+              <div key={plan.id} className="reveal" data-delay={plan.id * 120}>
+                <PlanCard
+                  {...plan}
+                  selected={selectedPlan === plan.id}
+                  onSelect={() => setSelectedPlan(plan.id)}
+                  onRemove={() => setSelectedPlan(null)}
+                />
               </div>
-              <div className="stat-label">Total repair cost paid out for Toyota Corolla.</div>
-            </div>
-            <div className="stat-divider"/>
-            <div className="stat-item">
-              <div className="stat-value">{stat2.toLocaleString()}+</div>
-              <div className="stat-label">Total claims processed by CARS24</div>
-            </div>
+            ))}
           </div>
-          <div className="stat-source">(Source: 2022–2024 CARS24 claim approvals)</div>
-        </div>
+        </section>
 
-        <div className="section-gap"/>
-
-        {/* ── EXPERT CARD ── */}
-        <div className="expert-card reveal" data-delay="100">
-          <div className="expert-card-inner">
+        {/* ── EXPERT ── */}
+        <section className="expert-section reveal">
+          <div className="expert-card">
             <div className="expert-avatar">👨‍🔧</div>
             <div className="expert-info">
               <div className="expert-name">Scott Travis</div>
-              <div className="expert-role">Lead mechanic</div>
-              <div className="expert-bio">
-                Scott personally reviews every claim, ensuring his team completes all necessary repairs for a world-class warranty experience.
-              </div>
+              <div className="expert-role">Lead Mechanic</div>
+              <p className="expert-bio">Scott personally reviews every claim, ensuring world-class warranty experience.</p>
             </div>
           </div>
-          <div className="expert-card-cta">
-            <button
-              ref={skipRef}
-              className="btn-secondary ripple-container"
-              onClick={ripple}
-            >
-              Skip, I don't want to protect my car
-            </button>
-          </div>
-        </div>
-
-        <div className="section-gap"/>
+        </section>
 
         {/* ── DISCLAIMER ── */}
-        <div className="disclaimer reveal">
-          <div style={{ marginBottom: 8 }}>
-            *Lorem ipsum: Disclaimer for value props. All warranty plans are subject to terms and conditions. Coverage excludes pre-existing conditions. See full terms at cars24.com.au/warranty-terms.
-          </div>
-          <div>
-            CARS24 Services Pty Ltd | ABN 98 621 301 005 | Australian Credit Licence 430428. All financial products are subject to credit assessment, eligibility criteria, fees and charges apply.
-          </div>
+        <div className="disclaimer">
+          *All warranty plans subject to terms and conditions. Coverage excludes pre-existing conditions. See full terms at cars24.com.au/warranty-terms.
+          <br/><br/>
+          CARS24 Services Pty Ltd | ABN 98 621 301 005 | Australian Credit Licence 430428.
         </div>
 
         {/* ── FOOTER CTA ── */}
         <footer className="footer-cta">
-          <div className="footer-cta-price">
-            <div className="footer-cta-amount">$36,786</div>
-            <div className="footer-cta-label">Drive away price</div>
+          <div>
+            <div className="footer-price">$36,786</div>
+            <div className="footer-label">Drive away price</div>
           </div>
-          <button
-            ref={proceedRef}
-            className="btn-primary ripple-container"
-            onClick={ripple}
-          >
-            Proceed →
+          <button className="btn-primary ripple-container" onClick={ripple}>
+            Proceed
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ marginLeft: 6 }}>
+              <path d="M6 4l4 4-4 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
         </footer>
-
       </div>
 
-      {/* Floating particles on click */}
-      <ParticleSystem/>
+      <ScrollProgressTracker/>
+      <ParticleField/>
     </>
   )
 }
 
-// ── Particle System ─────────────────────────────────────────
+// ── Scroll progress bar tracker ─────────────────────────────
+function ScrollProgressTracker() {
+  useEffect(() => {
+    const bar = document.getElementById('scrollBar')
+    if (!bar) return
+    const onScroll = () => {
+      const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
+      bar.style.width = pct + '%'
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  return null
+}
 
-function ParticleSystem() {
+// ── Ambient particle field ──────────────────────────────────
+function ParticleField() {
   const canvasRef = useRef(null)
-  const particles = useRef([])
-  const raf = useRef(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
+    let raf
+    const particles = []
 
     const resize = () => {
       canvas.width = window.innerWidth
@@ -730,48 +613,41 @@ function ParticleSystem() {
     resize()
     window.addEventListener('resize', resize)
 
-    const onClick = (e) => {
-      for (let i = 0; i < 8; i++) {
-        const angle = (Math.PI * 2 * i) / 8
-        const speed = 1.5 + Math.random() * 3
-        particles.current.push({
-          x: e.clientX, y: e.clientY,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed - 1,
-          life: 1,
-          decay: 0.025 + Math.random() * 0.02,
-          size: 3 + Math.random() * 4,
-          color: ['#4736FE', '#7c5cfc', '#a78bfa', '#2ea12f'][Math.floor(Math.random() * 4)],
-        })
-      }
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: -Math.random() * 0.5 - 0.1,
+        size: Math.random() * 2.5 + 0.5,
+        opacity: Math.random() * 0.3 + 0.1,
+        color: ['#4736FE', '#7c5cfc', '#a78bfa', '#60a5fa'][Math.floor(Math.random() * 4)],
+      })
     }
-    window.addEventListener('click', onClick)
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      particles.current = particles.current.filter(p => p.life > 0)
-      particles.current.forEach(p => {
+      particles.forEach(p => {
         p.x += p.vx
         p.y += p.vy
-        p.vy += 0.08
-        p.vx *= 0.97
-        p.life -= p.decay
+        if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width }
+        if (p.x < -10) p.x = canvas.width + 10
+        if (p.x > canvas.width + 10) p.x = -10
         ctx.save()
-        ctx.globalAlpha = p.life
+        ctx.globalAlpha = p.opacity
         ctx.fillStyle = p.color
         ctx.beginPath()
-        ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2)
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
         ctx.fill()
         ctx.restore()
       })
-      raf.current = requestAnimationFrame(draw)
+      raf = requestAnimationFrame(draw)
     }
     draw()
 
     return () => {
       window.removeEventListener('resize', resize)
-      window.removeEventListener('click', onClick)
-      cancelAnimationFrame(raf.current)
+      cancelAnimationFrame(raf)
     }
   }, [])
 
