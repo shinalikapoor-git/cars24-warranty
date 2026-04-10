@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 
 const coverageItems = [
-  { title: 'Engine', desc: 'Complete engine block, pistons, timing chain and head gasket', stat: '$12,000+' },
-  { title: 'Transmission', desc: 'Gearbox, torque converter and shift control components', stat: '$8,500+' },
-  { title: 'Electronics & Computing', desc: 'ECU, control modules, wiring harness and sensors', stat: '$4,200+' },
-  { title: 'Braking System', desc: 'ABS unit, calipers, master cylinder and brake booster', stat: '$3,800+' },
-  { title: 'Air Conditioning', desc: 'Compressor, condenser, evaporator and expansion valve', stat: '$2,500+' },
-  { title: 'Steering System', desc: 'Power steering pump, rack and tie rod assemblies', stat: '$3,200+' },
-  { title: 'Drivetrain', desc: 'Driveshaft, CV joints, differential and transfer case', stat: '$5,600+' },
+  { title: 'Engine', desc: 'Complete engine block, pistons, timing chain and head gasket', stat: '$12,000+', pos: { x: '35%', y: '48%' } },
+  { title: 'Transmission', desc: 'Gearbox, torque converter and shift control components', stat: '$8,500+', pos: { x: '45%', y: '58%' } },
+  { title: 'Electronics & Computing', desc: 'ECU, control modules, wiring harness and sensors', stat: '$4,200+', pos: { x: '38%', y: '40%' } },
+  { title: 'Braking System', desc: 'ABS unit, calipers, master cylinder and brake booster', stat: '$3,800+', pos: { x: '25%', y: '65%' } },
+  { title: 'Air Conditioning', desc: 'Compressor, condenser, evaporator and expansion valve', stat: '$2,500+', pos: { x: '20%', y: '50%' } },
+  { title: 'Steering System', desc: 'Power steering pump, rack and tie rod assemblies', stat: '$3,200+', pos: { x: '40%', y: '45%' } },
+  { title: 'Drivetrain', desc: 'Driveshaft, CV joints, differential and transfer case', stat: '$5,600+', pos: { x: '75%', y: '55%' } },
 ]
 
 const plans = [
@@ -16,13 +16,14 @@ const plans = [
   { id: 1, title: 'Up to 36 months cover', price: '$65', unit: '/week', validity: 'Warranty & RSA till Oct 2027' },
 ]
 
-const FadeSection = ({ children, className }) => (
+const FadeSection = ({ children, className, onViewportEnter }) => (
   <motion.div
     className={className}
     initial={{ opacity: 0, y: 50 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ margin: "-10% 0px -20% 0px" }}
+    viewport={{ margin: "-20% 0px -20% 0px", amount: 0.4 }}
     transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+    onViewportEnter={onViewportEnter}
   >
     {children}
   </motion.div>
@@ -30,11 +31,17 @@ const FadeSection = ({ children, className }) => (
 
 export default function App() {
   const { scrollYProgress } = useScroll()
+  const [activePart, setActivePart] = useState(0)
   
   // Cinematic transforms driven by scroll position
-  const carScale = useTransform(scrollYProgress, [0, 1], [1, 1.15])
-  const carY = useTransform(scrollYProgress, [0, 1], ['0%', '10%'])
-  const carOpacity = useTransform(scrollYProgress, [0.8, 0.95], [1, 0.1])
+  const carScale = useTransform(scrollYProgress, [0, 1], [1, 1.1])
+  const carY = useTransform(scrollYProgress, [0, 1], ['0%', '8%'])
+  
+  // Crossfade between Normal Car and X-Ray Car
+  // Hero section is ~ 0 to 0.1
+  const normalCarOpacity = useTransform(scrollYProgress, [0, 0.12, 0.22], [1, 1, 0])
+  const xrayCarOpacity = useTransform(scrollYProgress, [0.12, 0.22, 0.9, 0.95], [0, 1, 1, 0.1])
+
   const heroOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0])
 
   const [selectedPlan, setSelectedPlan] = useState(1)
@@ -45,10 +52,40 @@ export default function App() {
       <div className="cinematic-background">
         <motion.div 
           className="car-image-wrapper"
-          style={{ scale: carScale, y: carY, opacity: carOpacity }}
+          style={{ scale: carScale, y: carY }}
         >
-          <img src="/range-rover.png" alt="Range Rover Sport" className="car-image" />
+          {/* Base Layer: Normal Range Rover */}
+          <motion.img 
+            src="/range-rover.png" 
+            alt="Range Rover Sport" 
+            className="car-image normal-car" 
+            style={{ opacity: normalCarOpacity }}
+          />
+          
+          {/* Top Layer: X-Ray Translucent Chassis */}
+          <motion.div 
+            className="car-image-container xray-container"
+            style={{ opacity: xrayCarOpacity }}
+          >
+            <img src="/xray-rover.png" alt="Range Rover X-Ray" className="car-image xray-car" />
+            
+            {/* The Magical Glowing UI Tracker */}
+            <motion.div 
+              className="xray-target-dot"
+              initial={false}
+              animate={{ 
+                left: coverageItems[activePart].pos.x, 
+                top: coverageItems[activePart].pos.y 
+              }}
+              transition={{ type: "spring", stiffness: 45, damping: 15 }}
+            >
+              <div className="dot-core" />
+              <div className="dot-pulse" />
+              <div className="dot-pulse delay" />
+            </motion.div>
+          </motion.div>
         </motion.div>
+
         <div className="vignette-overlay"></div>
       </div>
 
@@ -96,7 +133,10 @@ export default function App() {
         <div className="coverage-journey">
           {coverageItems.map((item, i) => (
             <section key={i} className="scene component-scene">
-              <FadeSection className={`part-card glassmorphism ${i % 2 !== 0 ? 'align-right' : 'align-left'}`}>
+              <FadeSection 
+                className={`part-card glassmorphism ${i % 2 !== 0 ? 'align-right' : 'align-left'}`}
+                onViewportEnter={() => setActivePart(i)}
+              >
                 <div className="part-eyebrow">System 0{i + 1}</div>
                 <h2 className="part-title">{item.title}</h2>
                 <p className="part-desc">{item.desc}</p>
