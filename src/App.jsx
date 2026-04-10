@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
+import Car3DCanvas from './Car3DCanvas'
 
+// Data
 const coverageItems = [
-  { title: 'Engine', desc: 'Complete engine block, pistons, timing chain and head gasket', stat: '$12,000+', pos: { x: '35%', y: '48%' } },
-  { title: 'Transmission', desc: 'Gearbox, torque converter and shift control components', stat: '$8,500+', pos: { x: '45%', y: '58%' } },
-  { title: 'Electronics & Computing', desc: 'ECU, control modules, wiring harness and sensors', stat: '$4,200+', pos: { x: '38%', y: '40%' } },
-  { title: 'Braking System', desc: 'ABS unit, calipers, master cylinder and brake booster', stat: '$3,800+', pos: { x: '25%', y: '65%' } },
-  { title: 'Air Conditioning', desc: 'Compressor, condenser, evaporator and expansion valve', stat: '$2,500+', pos: { x: '20%', y: '50%' } },
-  { title: 'Steering System', desc: 'Power steering pump, rack and tie rod assemblies', stat: '$3,200+', pos: { x: '40%', y: '45%' } },
-  { title: 'Drivetrain', desc: 'Driveshaft, CV joints, differential and transfer case', stat: '$5,600+', pos: { x: '75%', y: '55%' } },
+  { title: 'Engine', desc: 'Complete engine block, pistons, timing chain and head gasket', stat: '$12,000+' },
+  { title: 'Transmission', desc: 'Gearbox, torque converter and shift control components', stat: '$8,500+' },
+  { title: 'Electronics & Computing', desc: 'ECU, control modules, wiring harness and sensors', stat: '$4,200+' },
+  { title: 'Braking System', desc: 'ABS unit, calipers, master cylinder and brake booster', stat: '$3,800+' },
+  { title: 'Air Conditioning', desc: 'Compressor, condenser, evaporator and expansion valve', stat: '$2,500+' },
+  { title: 'Steering System', desc: 'Power steering pump, rack and tie rod assemblies', stat: '$3,200+' },
+  { title: 'Drivetrain', desc: 'Driveshaft, CV joints, differential and transfer case', stat: '$5,600+' },
 ]
 
 const plans = [
-  { id: 0, title: 'Up to 12 months cover', price: '$38', unit: '/week', validity: 'Warranty & RSA till Oct 2025' },
-  { id: 1, title: 'Up to 36 months cover', price: '$65', unit: '/week', validity: 'Warranty & RSA till Oct 2027' },
+  { id: 0, title: 'Upto 12 months cover', price: '$38', unit: '/week', validity: 'Warranty & RSA till Oct 2024', features: ['1 car service'], popular: false },
+  { id: 1, title: 'Upto 24 months cover', price: '$45', unit: '/week', validity: 'Warranty & RSA till Oct 2025', features: ['2 car services'], popular: false },
+  { id: 2, title: 'Upto 36 months cover', price: '$52', unit: '/week', validity: 'Warranty & RSA till Oct 2026', features: ['3 car services'], popular: true },
 ]
 
 const FadeSection = ({ children, className, onViewportEnter }) => (
@@ -32,60 +35,15 @@ const FadeSection = ({ children, className, onViewportEnter }) => (
 export default function App() {
   const { scrollYProgress } = useScroll()
   const [activePart, setActivePart] = useState(0)
-  
-  // Cinematic transforms driven by scroll position
-  const carScale = useTransform(scrollYProgress, [0, 1], [1, 1.1])
-  const carY = useTransform(scrollYProgress, [0, 1], ['0%', '8%'])
-  
-  // Crossfade between Normal Car and X-Ray Car
-  // Hero section is ~ 0 to 0.1
-  const normalCarOpacity = useTransform(scrollYProgress, [0, 0.12, 0.22], [1, 1, 0])
-  const xrayCarOpacity = useTransform(scrollYProgress, [0.12, 0.22, 0.9, 0.95], [0, 1, 1, 0.1])
-
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0])
-
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0])
   const [selectedPlan, setSelectedPlan] = useState(1)
+  const [activeLayoutTab, setActiveLayoutTab] = useState('loan')
 
   return (
     <div className="apple-layout">
-      {/* Sticky Cinematic Background */}
+      {/* Interactive 3D Background */}
       <div className="cinematic-background">
-        <motion.div 
-          className="car-image-wrapper"
-          style={{ scale: carScale, y: carY }}
-        >
-          {/* Base Layer: Normal Range Rover */}
-          <motion.img 
-            src="/range-rover.png" 
-            alt="Range Rover Sport" 
-            className="car-image normal-car" 
-            style={{ opacity: normalCarOpacity }}
-          />
-          
-          {/* Top Layer: X-Ray Translucent Chassis */}
-          <motion.div 
-            className="car-image-container xray-container"
-            style={{ opacity: xrayCarOpacity }}
-          >
-            <img src="/xray-rover.png" alt="Range Rover X-Ray" className="car-image xray-car" />
-            
-            {/* The Magical Glowing UI Tracker */}
-            <motion.div 
-              className="xray-target-dot"
-              initial={false}
-              animate={{ 
-                left: coverageItems[activePart].pos.x, 
-                top: coverageItems[activePart].pos.y 
-              }}
-              transition={{ type: "spring", stiffness: 45, damping: 15 }}
-            >
-              <div className="dot-core" />
-              <div className="dot-pulse" />
-              <div className="dot-pulse delay" />
-            </motion.div>
-          </motion.div>
-        </motion.div>
-
+        <Car3DCanvas scrollYProgress={scrollYProgress} activePart={activePart} />
         <div className="vignette-overlay"></div>
       </div>
 
@@ -120,7 +78,7 @@ export default function App() {
               animate={{ opacity: 1 }}
               transition={{ duration: 1.5, delay: 0.5 }}
             >
-              CARS24 Platinum extends your manufacturer-level coverage.
+              Stay protected and ensure regular maintenance with CARS24 Platinum cover.
             </motion.p>
           </motion.div>
           <div className="scroll-indicator">
@@ -149,21 +107,49 @@ export default function App() {
           ))}
         </div>
 
-        {/* Proof transition */}
+        {/* Comprehensive Service Checks */}
+        <section className="scene service-scene">
+          <FadeSection className="service-card glassmorphism">
+            <h2>Comprehensive service checks</h2>
+            <div className="service-icons">
+              <div className="service-icon-box">
+                <span className="icon">👨‍🔧</span>
+                <p>Engine oil filter replacement</p>
+              </div>
+              <div className="service-icon-box">
+                <span className="icon">📋</span>
+                <p>Full vehicle inspection</p>
+              </div>
+              <div className="service-icon-box">
+                <span className="icon">🔋</span>
+                <p>Test battery condition</p>
+                <span className="badge">& much more</span>
+              </div>
+            </div>
+            <ul className="service-checklist">
+              <li>✓ CARS24 servicing maintains warranty integrity.*</li>
+              <li>✓ Handled by expert mechanics.</li>
+            </ul>
+            <a href="#" className="link-more">More about CARS24 Servicing &rarr;</a>
+          </FadeSection>
+        </section>
+
+        {/* Did You Know / Proof transition */}
         <section className="scene proof-scene">
-          <FadeSection className="proof-grid">
-            <div className="proof-stat">
-              <span className="huge-number">99%</span>
-              <span className="huge-label">Approval rate on genuine claims</span>
+          <FadeSection className="proof-grid glassmorphism">
+            <h2 className="did-you-know-title">Did you know?</h2>
+            <p className="did-you-know-text">Engine repairs cost upwards of <strong style={{color: '#ff9f0a'}}>$10,000</strong> in Australia. Get years of protection for a fraction of the cost with an extended warranty.</p>
+            <div className="proof-stats-row">
+              <div className="proof-stat">
+                <span className="huge-number">99%+</span>
+                <span className="huge-label">claim approval rate. The best in Australia.</span>
+              </div>
+              <div className="proof-stat">
+                <span className="huge-number">∞</span>
+                <span className="huge-label">Unlimited claims. No Km limit warranty.</span>
+              </div>
             </div>
-            <div className="proof-stat">
-              <span className="huge-number">∞</span>
-              <span className="huge-label">No kilometer limit restrictions</span>
-            </div>
-            <div className="proof-stat">
-              <span className="huge-number">2k+</span>
-              <span className="huge-label">Platinum claims smoothly processed</span>
-            </div>
+            <a href="#" className="link-more">More about CARS24 warranty &rarr;</a>
           </FadeSection>
         </section>
 
@@ -171,10 +157,36 @@ export default function App() {
         <section className="scene checkout-scene">
           <FadeSection className="checkout-card glassmorphism">
             <div className="checkout-header">
-              <h2>Select your coverage</h2>
-              <p>Opt for the ultimate peace of mind.</p>
+              <h2>Choose your plan</h2>
+              <p>Your Landrover Rangerover's manufacturer warranty is active till <strong>23 Aug 2026</strong>. Stay protected and ensure regular maintenance with CARS24 Platinum cover.</p>
             </div>
             
+            {/* Chart mock */}
+            <div className="chart-mock">
+              <div className="chart-line">
+                 <div className="chart-blue-box" />
+              </div>
+              <div className="chart-labels">
+                <span>Today</span>
+                <span>12 months</span>
+                <span>24 months</span>
+                <span>36 months</span>
+              </div>
+            </div>
+
+            <ul className="service-checklist">
+              <li><span style={{color:'#2997ff'}}>✓</span> FREE Roadside assistance(RSA) with all plans</li>
+              <li><span style={{color:'#2997ff'}}>✓</span> CARS24 servicing upholds warranty integrity.</li>
+            </ul>
+            
+            <div className="plan-tabs-container">
+              <div className="plan-tabs">
+                <button className={activeLayoutTab === 'loan' ? 'active' : ''} onClick={()=>setActiveLayoutTab('loan')}>Add to loan</button>
+                <button className={activeLayoutTab === 'outright' ? 'active' : ''} onClick={()=>setActiveLayoutTab('outright')}>Pay outright</button>
+              </div>
+            </div>
+            <p className="tab-subtext">Price of plan will be added to your loan repayments.</p>
+
             <div className="plan-options">
               {plans.map((plan) => (
                 <div 
@@ -182,17 +194,28 @@ export default function App() {
                   className={`plan-item ${selectedPlan === plan.id ? 'active' : ''}`}
                   onClick={() => setSelectedPlan(plan.id)}
                 >
-                  <div className="plan-radio">
-                    <div className="radio-inner" />
+                  {plan.popular && <div className="best-value-badge">Best value</div>}
+                  
+                  <div className="plan-radio-col">
+                    <div className="plan-radio">
+                      <div className="radio-inner" />
+                    </div>
                   </div>
+
                   <div className="plan-details">
                     <h3>{plan.title}</h3>
-                    <span className="plan-validity">{plan.validity}</span>
+                    <div className="price-val">{plan.price}<span className="price-unit">{plan.unit}</span></div>
+                    <ul className="plan-features">
+                      <li>• {plan.validity}</li>
+                      {plan.features.map(f => <li key={f}>• {f}</li>)}
+                    </ul>
                   </div>
-                  <div className="plan-price">
-                    <span className="price-val">{plan.price}</span>
-                    <span className="price-unit">{plan.unit}</span>
-                  </div>
+
+                  {selectedPlan === plan.id && (
+                     <div className="plan-action-col">
+                        <button className="remove-btn" onClick={(e) => { e.stopPropagation(); setSelectedPlan(null) }}>Remove</button>
+                     </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -202,8 +225,9 @@ export default function App() {
                 <span className="drive-away-label">Drive away price</span>
                 <span className="drive-away-val">$36,786</span>
               </div>
-              <button className="apple-btn">Continue to Payment</button>
+              <button className="apple-btn">Add Cover</button>
             </div>
+            <p className="customize-text"><strong>Want to customize your cover?</strong><br />Choose the terms that work the best for you.</p>
           </FadeSection>
         </section>
         
