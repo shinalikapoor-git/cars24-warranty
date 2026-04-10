@@ -29,7 +29,7 @@ function RealCarModel({ scrollYProgress }) {
 
   useFrame(() => {
     const scroll = scrollYProgress.get()
-    
+
     // Transition to X-Ray glass when scrolling past hero
     let targetOpacity = 1;
 
@@ -43,9 +43,9 @@ function RealCarModel({ scrollYProgress }) {
       let matTargetOpacity = targetOpacity;
       // Preserve some opacity on the underbody/glass so the car doesn't completely vanish
       if (!mat.name.includes('paint') && !mat.name.includes('metal')) {
-         matTargetOpacity = Math.max(0.1, targetOpacity);
+        matTargetOpacity = Math.max(0.1, targetOpacity);
       }
-      
+
       mat.opacity = THREE.MathUtils.lerp(mat.opacity, matTargetOpacity, 0.08)
 
       // Toggle depth sorting based on opacity threshold
@@ -59,7 +59,7 @@ function RealCarModel({ scrollYProgress }) {
 
     // Cinematic base rotate
     if (carRef.current) {
-       carRef.current.rotation.y = scroll * Math.PI * 0.6 
+      carRef.current.rotation.y = scroll * Math.PI * 0.6
     }
   })
 
@@ -84,7 +84,7 @@ function InternalNodes({ scrollYProgress, activePart }) {
     const scroll = scrollYProgress.get()
     let targetScale = scroll > 0.08 ? 1 : 0
     groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1)
-    groupRef.current.rotation.y = scroll * Math.PI * 0.6 
+    groupRef.current.rotation.y = scroll * Math.PI * 0.6
   })
 
   return (
@@ -113,7 +113,7 @@ function InternalNodes({ scrollYProgress, activePart }) {
 function CameraRig({ scrollYProgress, activePart }) {
   useFrame((state) => {
     const scroll = scrollYProgress.get()
-    
+
     // Default cinematic view
     let cx = 4, cy = 1.2, cz = 5
     let tx = 0, ty = 0, tz = 0
@@ -129,12 +129,12 @@ function CameraRig({ scrollYProgress, activePart }) {
         cx = -3; cy = -0.2; cz = -2.5;
         tx = 0; ty = -0.3; tz = -1.0;
       } else {
-         cx = 4; cy = 1; cz = 4;
+        cx = 4; cy = 1; cz = 4;
       }
     }
 
     state.camera.position.lerp(new THREE.Vector3(cx, cy, cz), 0.05)
-    
+
     if (!state.camera.userData.target) state.camera.userData.target = new THREE.Vector3(0, 0, 0)
     state.camera.userData.target.lerp(new THREE.Vector3(tx, ty, tz), 0.05)
     state.camera.lookAt(state.camera.userData.target)
@@ -145,21 +145,21 @@ function CameraRig({ scrollYProgress, activePart }) {
 export default function Car3DCanvas({ scrollYProgress, activePart }) {
   return (
     <div className="canvas-wrapper" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-       <Canvas camera={{ position: [4, 1.2, 5], fov: 45 }}>
-          <ambientLight intensity={0.4} />
-          <spotLight position={[10, 15, 10]} intensity={1.5} penumbra={1} castShadow />
-          <spotLight position={[-10, 5, -10]} intensity={2} color="#4db8ff" penumbra={1} />
-          
-          <Float speed={1.5} rotationIntensity={0.1} floatIntensity={0.1}>
-             <RealCarModel scrollYProgress={scrollYProgress} />
-             <InternalNodes scrollYProgress={scrollYProgress} activePart={activePart} />
-          </Float>
+      <Canvas camera={{ position: [4, 1.2, 5], fov: 45 }}>
+        <ambientLight intensity={0.4} />
+        <spotLight position={[10, 15, 10]} intensity={1.5} penumbra={1} castShadow />
+        <spotLight position={[-10, 5, -10]} intensity={2} color="#4db8ff" penumbra={1} />
 
-          <ContactShadows position={[0, -1.2, 0]} opacity={0.5} scale={10} blur={2.5} far={4} />
-          <Environment preset="city" />
-          
-          <CameraRig scrollYProgress={scrollYProgress} activePart={activePart} />
-       </Canvas>
+        <Float speed={1.5} rotationIntensity={0.1} floatIntensity={0.1}>
+          <RealCarModel scrollYProgress={scrollYProgress} />
+          <InternalNodes scrollYProgress={scrollYProgress} activePart={activePart} />
+        </Float>
+
+        <ContactShadows position={[0, -1.2, 0]} opacity={0.5} scale={10} blur={2.5} far={4} />
+        <Environment preset="city" />
+
+        <CameraRig scrollYProgress={scrollYProgress} activePart={activePart} />
+      </Canvas>
     </div>
   )
 }

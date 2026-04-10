@@ -48,7 +48,7 @@ export default function App() {
       </div>
 
       <div className="scroll-content">
-        
+
         {/* Header Overlay */}
         <header className="blur-header">
           <div className="header-inner">
@@ -64,7 +64,7 @@ export default function App() {
         {/* Hero Area */}
         <section className="scene hero-scene">
           <motion.div className="hero-layout" style={{ opacity: heroOpacity }}>
-            <motion.h1 
+            <motion.h1
               className="epic-title"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -72,7 +72,7 @@ export default function App() {
             >
               Absolute protection.<br />Beautifully simple.
             </motion.h1>
-            <motion.p 
+            <motion.p
               className="epic-subtitle"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -91,7 +91,7 @@ export default function App() {
         <div className="coverage-journey">
           {coverageItems.map((item, i) => (
             <section key={i} className="scene component-scene">
-              <FadeSection 
+              <FadeSection
                 className={`part-card glassmorphism ${i % 2 !== 0 ? 'align-right' : 'align-left'}`}
                 onViewportEnter={() => setActivePart(i)}
               >
@@ -156,10 +156,10 @@ export default function App() {
           <FadeSection className="did-you-know-card glassmorphism">
             <div className="did-you-know-content">
               <h2 className="did-you-know-title">Did you know?</h2>
-              <p className="did-you-know-text">Engine repairs cost upwards of <strong style={{color: '#ff9f0a'}}>$10,000</strong> in Australia. Get years of protection for a fraction of the cost with an extended warranty.</p>
+              <p className="did-you-know-text">Engine repairs cost upwards of <strong style={{ color: '#ff9f0a' }}>$10,000</strong> in Australia. Get years of protection for a fraction of the cost with an extended warranty.</p>
             </div>
             <div className="did-you-know-image">
-               <img src="/range-rover.png" alt="Protected Car" />
+              <img src="/range-rover.png" alt="Protected Car" />
             </div>
           </FadeSection>
         </section>
@@ -171,11 +171,11 @@ export default function App() {
               <h2>Choose your plan</h2>
               <p>Your Landrover Rangerover's manufacturer warranty is active till <strong>23 Aug 2026</strong>. Stay protected and ensure regular maintenance with CARS24 Platinum cover.</p>
             </div>
-            
+
             {/* Chart mock */}
             <div className="chart-mock">
               <div className="chart-line">
-                 <div className="chart-blue-box" />
+                <div className="chart-blue-box" />
               </div>
               <div className="chart-labels">
                 <span>Today</span>
@@ -186,27 +186,27 @@ export default function App() {
             </div>
 
             <ul className="service-checklist">
-              <li><span style={{color:'#2997ff'}}>✓</span> FREE Roadside assistance(RSA) with all plans</li>
-              <li><span style={{color:'#2997ff'}}>✓</span> CARS24 servicing upholds warranty integrity.</li>
+              <li><span style={{ color: '#2997ff' }}>✓</span> FREE Roadside assistance(RSA) with all plans</li>
+              <li><span style={{ color: '#2997ff' }}>✓</span> CARS24 servicing upholds warranty integrity.</li>
             </ul>
-            
+
             <div className="plan-tabs-container">
               <div className="plan-tabs">
-                <button className={activeLayoutTab === 'loan' ? 'active' : ''} onClick={()=>setActiveLayoutTab('loan')}>Add to loan</button>
-                <button className={activeLayoutTab === 'outright' ? 'active' : ''} onClick={()=>setActiveLayoutTab('outright')}>Pay outright</button>
+                <button className={activeLayoutTab === 'loan' ? 'active' : ''} onClick={() => setActiveLayoutTab('loan')}>Add to loan</button>
+                <button className={activeLayoutTab === 'outright' ? 'active' : ''} onClick={() => setActiveLayoutTab('outright')}>Pay outright</button>
               </div>
             </div>
             <p className="tab-subtext">Price of plan will be added to your loan repayments.</p>
 
             <div className="plan-options">
               {plans.map((plan) => (
-                <div 
+                <div
                   key={plan.id}
                   className={`plan-item ${selectedPlan === plan.id ? 'active' : ''}`}
                   onClick={() => setSelectedPlan(plan.id)}
                 >
                   {plan.popular && <div className="best-value-badge">Best value</div>}
-                  
+
                   <div className="plan-radio-col">
                     <div className="plan-radio">
                       <div className="radio-inner" />
@@ -223,9 +223,9 @@ export default function App() {
                   </div>
 
                   {selectedPlan === plan.id && (
-                     <div className="plan-action-col">
-                        <button className="remove-btn" onClick={(e) => { e.stopPropagation(); setSelectedPlan(null) }}>Remove</button>
-                     </div>
+                    <div className="plan-action-col">
+                      <button className="remove-btn" onClick={(e) => { e.stopPropagation(); setSelectedPlan(null) }}>Remove</button>
+                    </div>
                   )}
                 </div>
               ))}
@@ -241,7 +241,7 @@ export default function App() {
             <p className="customize-text"><strong>Want to customize your cover?</strong><br />Choose the terms that work the best for you.</p>
           </FadeSection>
         </section>
-        
+
         {/* Footer */}
         <footer className="apple-footer">
           <p>Copyright © 2026 CARS24 Australia. All rights reserved.</p>
