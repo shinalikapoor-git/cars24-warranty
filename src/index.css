@@ -143,6 +143,24 @@ body {
   pointer-events: none;
 }
 
+/* Speeding Car */
+.speeding-car-container {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100vw;
+  max-width: 1200px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.speeding-car-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+}
+
 /* Scroll Content Layer */
 .scroll-content {
   position: relative;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Car3DCanvas from './Car3DCanvas'
 
@@ -39,11 +39,37 @@ export default function App() {
   const [selectedPlan, setSelectedPlan] = useState(1)
   const [activeLayoutTab, setActiveLayoutTab] = useState('loan')
 
+  // Speeding car parallax arrays
+  const speedCarX = useTransform(scrollYProgress, [0.6, 0.95], ['-100vw', '100vw'])
+  const speedCarOpacity = useTransform(scrollYProgress, [0.6, 0.65, 0.85, 0.9], [0, 1, 1, 0])
+
+  // Audio trigger
+  const engineAudioRef = useRef(null)
+
+  useEffect(() => {
+    return scrollYProgress.onChange((v) => {
+      if (v > 0.6 && v < 0.9) {
+        if (engineAudioRef.current && engineAudioRef.current.paused) {
+          engineAudioRef.current.play().catch(() => {})
+        }
+      } else {
+        if (engineAudioRef.current && !engineAudioRef.current.paused) {
+          engineAudioRef.current.pause()
+        }
+      }
+    })
+  }, [scrollYProgress])
+
   return (
     <div className="apple-layout">
       {/* Interactive 3D Background */}
       <div className="cinematic-background">
         <Car3DCanvas scrollYProgress={scrollYProgress} activePart={activePart} />
+        
+        <motion.div className="speeding-car-container" style={{ x: speedCarX, opacity: speedCarOpacity }}>
+          <img src="/speeding-car-cutout.png" alt="Speeding Car" className="speeding-car-image" />
+        </motion.div>
+
         <div className="vignette-overlay"></div>
       </div>
 
@@ -242,12 +268,15 @@ export default function App() {
           </FadeSection>
         </section>
 
-        {/* Footer */}
-        <footer className="apple-footer">
-          <p>Copyright © 2026 CARS24 Australia. All rights reserved.</p>
-        </footer>
+      {/* Footer */}
+      <footer className="apple-footer">
+        <p>Copyright © 2026 CARS24 Australia. All rights reserved.</p>
+      </footer>
 
       </div>
+
+      {/* Audio Element */}
+      <audio ref={engineAudioRef} src="/engine-start.ogg" preload="auto" />
     </div>
   )
 }

@@ -33,17 +33,20 @@ function RealCarModel({ scrollYProgress }) {
     // Transition to X-Ray glass when scrolling past hero
     let targetOpacity = 1;
 
-    if (scroll > 0.05) {
-      // Fade out to 0.15 by scroll 0.2
+    if (scroll > 0.05 && scroll < 0.6) {
       const progress = Math.min((scroll - 0.05) / 0.15, 1)
       targetOpacity = 1 - (progress * 0.85)
+    } else if (scroll >= 0.6) {
+      // Dissolve completely for the checkout/service sections horizontally!
+      const progress = Math.min((scroll - 0.6) / 0.1, 1)
+      targetOpacity = 0.15 - (progress * 0.15)
     }
 
     Object.values(clonedMaterials).forEach(mat => {
       let matTargetOpacity = targetOpacity;
       // Preserve some opacity on the underbody/glass so the car doesn't completely vanish
       if (!mat.name.includes('paint') && !mat.name.includes('metal')) {
-        matTargetOpacity = Math.max(0.1, targetOpacity);
+         matTargetOpacity = scroll >= 0.6 ? targetOpacity : Math.max(0.1, targetOpacity);
       }
 
       mat.opacity = THREE.MathUtils.lerp(mat.opacity, matTargetOpacity, 0.08)
@@ -59,7 +62,12 @@ function RealCarModel({ scrollYProgress }) {
 
     // Cinematic base rotate
     if (carRef.current) {
-      carRef.current.rotation.y = scroll * Math.PI * 0.6
+       // Parallax rotate when scrolling horizontally
+       let targetRot = scroll * Math.PI * 0.6;
+       if (scroll >= 0.6) {
+          targetRot += (scroll - 0.6) * Math.PI;
+       }
+       carRef.current.rotation.y = THREE.MathUtils.lerp(carRef.current.rotation.y, targetRot, 0.1)
     }
   })
 
@@ -82,9 +90,13 @@ function InternalNodes({ scrollYProgress, activePart }) {
 
   useFrame(() => {
     const scroll = scrollYProgress.get()
-    let targetScale = scroll > 0.08 ? 1 : 0
+    // Hide nodes completely after scroll > 0.6
+    let targetScale = (scroll > 0.08 && scroll < 0.6) ? 1 : 0
     groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1)
-    groupRef.current.rotation.y = scroll * Math.PI * 0.6
+    
+    let targetRot = scroll * Math.PI * 0.6;
+    if (scroll >= 0.6) targetRot += (scroll - 0.6) * Math.PI;
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRot, 0.1)
   })
 
   return (
@@ -118,7 +130,7 @@ function CameraRig({ scrollYProgress, activePart }) {
     let cx = 4, cy = 1.2, cz = 5
     let tx = 0, ty = 0, tz = 0
 
-    if (scroll > 0.08) {
+    if (scroll > 0.08 && scroll < 0.6) {
       if (activePart === 0) { // Engine (Front zoom)
         cx = 2.5; cy = 0.8; cz = 3.5;
         tx = 0; ty = 0.2; tz = 1.2;
@@ -131,6 +143,13 @@ function CameraRig({ scrollYProgress, activePart }) {
       } else {
         cx = 4; cy = 1; cz = 4;
       }
+    } else if (scroll >= 0.6) {
+      // Horizontal Parallax movement matching the remaining checkout sections
+      const parallax = (scroll - 0.6) * 12;
+      cx = 4 + parallax;
+      cy = 1.5;
+      cz = 5 - (parallax * 0.3);
+      tx = parallax * 0.4; // pan target slightly so it drifts left
     }
 
     state.camera.position.lerp(new THREE.Vector3(cx, cy, cz), 0.05)
