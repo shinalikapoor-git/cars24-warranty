@@ -40,21 +40,24 @@ export default function App() {
   const [activeLayoutTab, setActiveLayoutTab] = useState('loan')
 
   // Speeding car parallax arrays
-  const speedCarX = useTransform(scrollYProgress, [0.6, 0.95], ['100vw', '-100vw'])
+  const speedCarX = useTransform(scrollYProgress, [0.6, 0.95], ['-100vw', '100vw'])
   const speedCarOpacity = useTransform(scrollYProgress, [0.6, 0.65, 0.85, 0.9], [0, 1, 1, 0])
 
+  // Audio trigger
+  const engineAudioRef = useRef(null)
+  const audioUnlockedRef = useRef(false)
   const audioHasPlayedRef = useRef(false)
-  const audioCtxRef = useRef(null)
 
-  // Initialize and unlock AudioContext on user interaction
+  // Unlock audio context on first interaction
   useEffect(() => {
     const handleInteract = () => {
-      if (!audioCtxRef.current) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext
-        audioCtxRef.current = new AudioContext()
-      }
-      if (audioCtxRef.current.state === 'suspended') {
-        audioCtxRef.current.resume()
+      if (engineAudioRef.current && !audioUnlockedRef.current) {
+        engineAudioRef.current.volume = 1.0;
+        engineAudioRef.current.play().then(() => {
+          engineAudioRef.current.pause()
+          engineAudioRef.current.currentTime = 0
+          audioUnlockedRef.current = true
+        }).catch(err => console.log('Audio unlock failed:', err))
       }
       window.removeEventListener('click', handleInteract)
       window.removeEventListener('touchstart', handleInteract)
@@ -66,59 +69,21 @@ export default function App() {
     return () => {
       window.removeEventListener('click', handleInteract)
       window.removeEventListener('touchstart', handleInteract)
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close().catch(() => {})
-      }
     }
   }, [])
-
-  // Synthesize a reliable engine sound using Web Audio API
-  const playEngineSound = () => {
-    try {
-      const ctx = audioCtxRef.current
-      if (!ctx) return
-      
-      if (ctx.state === 'suspended') {
-        ctx.resume()
-      }
-
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
-      const filter = ctx.createBiquadFilter()
-
-      osc.type = 'sawtooth'
-      osc.frequency.setValueAtTime(30, ctx.currentTime)
-      osc.frequency.linearRampToValueAtTime(140, ctx.currentTime + 0.8)
-      osc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 2.5)
-      
-      filter.type = 'lowpass'
-      filter.frequency.setValueAtTime(400, ctx.currentTime)
-      filter.frequency.linearRampToValueAtTime(1500, ctx.currentTime + 0.8)
-      filter.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 2.5)
-
-      gain.gain.setValueAtTime(0, ctx.currentTime)
-      gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.2)
-      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 2.5)
-      
-      osc.connect(filter)
-      filter.connect(gain)
-      gain.connect(ctx.destination)
-      
-      osc.start()
-      osc.stop(ctx.currentTime + 2.5)
-    } catch (err) {
-      console.error('Audio synthesis failed', err)
-    }
-  }
 
   useEffect(() => {
     return scrollYProgress.onChange((v) => {
       if (v > 0.6 && v < 0.9) {
-        if (!audioHasPlayedRef.current) {
+        if (!audioHasPlayedRef.current && audioUnlockedRef.current && engineAudioRef.current) {
           audioHasPlayedRef.current = true
-          playEngineSound()
+          engineAudioRef.current.currentTime = 0
+          engineAudioRef.current.play().catch(() => {})
         }
       } else {
+        if (engineAudioRef.current && !engineAudioRef.current.paused) {
+          engineAudioRef.current.pause()
+        }
         if (v < 0.5 || v > 0.95) {
           audioHasPlayedRef.current = false
         }
@@ -340,6 +305,9 @@ export default function App() {
       </footer>
 
       </div>
+
+      {/* Audio Element */}
+      <audio ref={engineAudioRef} src="/engine-start.wav" preload="auto" />
     </div>
   )
 }
