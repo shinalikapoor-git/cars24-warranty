@@ -52,8 +52,12 @@ export default function App() {
   useEffect(() => {
     const handleInteract = () => {
       if (engineAudioRef.current && !audioUnlockedRef.current) {
-        engineAudioRef.current.load()
-        audioUnlockedRef.current = true
+        engineAudioRef.current.volume = 0.5
+        engineAudioRef.current.play().then(() => {
+          engineAudioRef.current.pause()
+          engineAudioRef.current.currentTime = 0
+          audioUnlockedRef.current = true
+        }).catch(err => console.log('Audio unlock failed:', err))
       }
       window.removeEventListener('click', handleInteract)
       window.removeEventListener('touchstart', handleInteract)
@@ -301,7 +305,7 @@ export default function App() {
       </div>
 
       {/* Audio Element */}
-      <audio ref={engineAudioRef} src="/engine-start.ogg" preload="auto" />
+      <audio ref={engineAudioRef} src="/engine-start.wav" preload="auto" />
     </div>
   )
 }
