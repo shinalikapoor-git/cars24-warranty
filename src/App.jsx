@@ -40,48 +40,53 @@ export default function App() {
   const [activeLayoutTab, setActiveLayoutTab] = useState('loan')
 
   // Speeding car parallax arrays
-  const speedCarX = useTransform(scrollYProgress, [0.6, 0.95], ['100vw', '-100vw'])
+  const speedCarX = useTransform(scrollYProgress, [0.6, 0.95], ['-100vw', '100vw'])
   const speedCarOpacity = useTransform(scrollYProgress, [0.6, 0.65, 0.85, 0.9], [0, 1, 1, 0])
 
-  // Audio trigger
-  const engineAudioRef = useRef(null)
-  const audioUnlockedRef = useRef(false)
   const audioHasPlayedRef = useRef(false)
 
-  // Unlock audio context on first interaction
-  useEffect(() => {
-    const handleInteract = () => {
-      if (engineAudioRef.current && !audioUnlockedRef.current) {
-        engineAudioRef.current.volume = 0.5
-        engineAudioRef.current.play().then(() => {
-          engineAudioRef.current.pause()
-          engineAudioRef.current.currentTime = 0
-          audioUnlockedRef.current = true
-        }).catch(err => console.log('Audio unlock failed:', err))
-      }
-      window.removeEventListener('click', handleInteract)
-      window.removeEventListener('touchstart', handleInteract)
+  // Synthesize a reliable engine sound using Web Audio API
+  const playEngineSound = () => {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext
+      const ctx = new AudioContext()
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      const filter = ctx.createBiquadFilter()
+
+      osc.type = 'sawtooth'
+      osc.frequency.setValueAtTime(30, ctx.currentTime)
+      osc.frequency.linearRampToValueAtTime(120, ctx.currentTime + 0.8)
+      osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 2.5)
+      
+      filter.type = 'lowpass'
+      filter.frequency.setValueAtTime(400, ctx.currentTime)
+      filter.frequency.linearRampToValueAtTime(1000, ctx.currentTime + 0.8)
+      filter.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 2.5)
+
+      gain.gain.setValueAtTime(0, ctx.currentTime)
+      gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.2)
+      gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 2.5)
+      
+      osc.connect(filter)
+      filter.connect(gain)
+      gain.connect(ctx.destination)
+      
+      osc.start()
+      osc.stop(ctx.currentTime + 2.5)
+    } catch (err) {
+      console.error('Audio synthesis failed', err)
     }
-    window.addEventListener('click', handleInteract)
-    window.addEventListener('touchstart', handleInteract)
-    return () => {
-      window.removeEventListener('click', handleInteract)
-      window.removeEventListener('touchstart', handleInteract)
-    }
-  }, [])
+  }
 
   useEffect(() => {
     return scrollYProgress.onChange((v) => {
       if (v > 0.6 && v < 0.9) {
-        if (engineAudioRef.current && engineAudioRef.current.paused && audioUnlockedRef.current && !audioHasPlayedRef.current) {
+        if (!audioHasPlayedRef.current) {
           audioHasPlayedRef.current = true
-          engineAudioRef.current.play().catch(() => {})
+          playEngineSound()
         }
       } else {
-        if (engineAudioRef.current && !engineAudioRef.current.paused) {
-          engineAudioRef.current.pause()
-          engineAudioRef.current.currentTime = 0
-        }
         if (v < 0.5 || v > 0.95) {
           audioHasPlayedRef.current = false
         }
@@ -95,7 +100,7 @@ export default function App() {
       <div className="cinematic-background">
         <Car3DCanvas scrollYProgress={scrollYProgress} activePart={activePart} />
         
-        <motion.div className="speeding-car-container" style={{ x: speedCarX, y: "-50%", opacity: speedCarOpacity, scaleX: -1 }}>
+        <motion.div className="speeding-car-container" style={{ x: speedCarX, y: "-50%", opacity: speedCarOpacity, scaleX: 1 }}>
           <img src="/speeding-car-cutout.png" alt="Speeding Car" className="speeding-car-image" />
         </motion.div>
 
@@ -303,9 +308,6 @@ export default function App() {
       </footer>
 
       </div>
-
-      {/* Audio Element */}
-      <audio ref={engineAudioRef} src="/engine-start.wav" preload="auto" />
     </div>
   )
 }
