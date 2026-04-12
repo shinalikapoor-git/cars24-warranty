@@ -45,16 +45,38 @@ export default function App() {
 
   // Audio trigger
   const engineAudioRef = useRef(null)
+  const audioUnlockedRef = useRef(false)
+
+  // Unlock audio context on first interaction
+  useEffect(() => {
+    const handleInteract = () => {
+      if (engineAudioRef.current && !audioUnlockedRef.current) {
+        engineAudioRef.current.play().then(() => {
+          engineAudioRef.current.pause()
+          audioUnlockedRef.current = true
+        }).catch(err => console.log('Audio unlock failed:', err))
+      }
+      window.removeEventListener('click', handleInteract)
+      window.removeEventListener('touchstart', handleInteract)
+    }
+    window.addEventListener('click', handleInteract)
+    window.addEventListener('touchstart', handleInteract)
+    return () => {
+      window.removeEventListener('click', handleInteract)
+      window.removeEventListener('touchstart', handleInteract)
+    }
+  }, [])
 
   useEffect(() => {
     return scrollYProgress.onChange((v) => {
       if (v > 0.6 && v < 0.9) {
-        if (engineAudioRef.current && engineAudioRef.current.paused) {
+        if (engineAudioRef.current && engineAudioRef.current.paused && audioUnlockedRef.current) {
           engineAudioRef.current.play().catch(() => {})
         }
       } else {
         if (engineAudioRef.current && !engineAudioRef.current.paused) {
           engineAudioRef.current.pause()
+          engineAudioRef.current.currentTime = 0
         }
       }
     })
@@ -66,7 +88,7 @@ export default function App() {
       <div className="cinematic-background">
         <Car3DCanvas scrollYProgress={scrollYProgress} activePart={activePart} />
         
-        <motion.div className="speeding-car-container" style={{ x: speedCarX, opacity: speedCarOpacity }}>
+        <motion.div className="speeding-car-container" style={{ x: speedCarX, y: "-50%", opacity: speedCarOpacity }}>
           <img src="/speeding-car-cutout.png" alt="Speeding Car" className="speeding-car-image" />
         </motion.div>
 
