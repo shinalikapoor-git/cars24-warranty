@@ -40,32 +40,64 @@ export default function App() {
   const [activeLayoutTab, setActiveLayoutTab] = useState('loan')
 
   // Speeding car parallax arrays
-  const speedCarX = useTransform(scrollYProgress, [0.6, 0.95], ['-100vw', '100vw'])
+  const speedCarX = useTransform(scrollYProgress, [0.6, 0.95], ['100vw', '-100vw'])
   const speedCarOpacity = useTransform(scrollYProgress, [0.6, 0.65, 0.85, 0.9], [0, 1, 1, 0])
 
   const audioHasPlayedRef = useRef(false)
+  const audioCtxRef = useRef(null)
+
+  // Initialize and unlock AudioContext on user interaction
+  useEffect(() => {
+    const handleInteract = () => {
+      if (!audioCtxRef.current) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext
+        audioCtxRef.current = new AudioContext()
+      }
+      if (audioCtxRef.current.state === 'suspended') {
+        audioCtxRef.current.resume()
+      }
+      window.removeEventListener('click', handleInteract)
+      window.removeEventListener('touchstart', handleInteract)
+    }
+    
+    window.addEventListener('click', handleInteract)
+    window.addEventListener('touchstart', handleInteract)
+    
+    return () => {
+      window.removeEventListener('click', handleInteract)
+      window.removeEventListener('touchstart', handleInteract)
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close().catch(() => {})
+      }
+    }
+  }, [])
 
   // Synthesize a reliable engine sound using Web Audio API
   const playEngineSound = () => {
     try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext
-      const ctx = new AudioContext()
+      const ctx = audioCtxRef.current
+      if (!ctx) return
+      
+      if (ctx.state === 'suspended') {
+        ctx.resume()
+      }
+
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
       const filter = ctx.createBiquadFilter()
 
       osc.type = 'sawtooth'
       osc.frequency.setValueAtTime(30, ctx.currentTime)
-      osc.frequency.linearRampToValueAtTime(120, ctx.currentTime + 0.8)
-      osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 2.5)
+      osc.frequency.linearRampToValueAtTime(140, ctx.currentTime + 0.8)
+      osc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 2.5)
       
       filter.type = 'lowpass'
       filter.frequency.setValueAtTime(400, ctx.currentTime)
-      filter.frequency.linearRampToValueAtTime(1000, ctx.currentTime + 0.8)
-      filter.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 2.5)
+      filter.frequency.linearRampToValueAtTime(1500, ctx.currentTime + 0.8)
+      filter.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 2.5)
 
       gain.gain.setValueAtTime(0, ctx.currentTime)
-      gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.2)
+      gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.2)
       gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 2.5)
       
       osc.connect(filter)
@@ -100,7 +132,7 @@ export default function App() {
       <div className="cinematic-background">
         <Car3DCanvas scrollYProgress={scrollYProgress} activePart={activePart} />
         
-        <motion.div className="speeding-car-container" style={{ x: speedCarX, y: "-50%", opacity: speedCarOpacity, scaleX: 1 }}>
+        <motion.div className="speeding-car-container" style={{ x: speedCarX, y: "-50%", opacity: speedCarOpacity, scaleX: -1 }}>
           <img src="/speeding-car-cutout.png" alt="Speeding Car" className="speeding-car-image" />
         </motion.div>
 
